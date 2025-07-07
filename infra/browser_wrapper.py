@@ -1,5 +1,3 @@
-from selenium import webdriver
-from infra.config_provider import ConfigProvider
 from selenium import common as c
 import undetected_chromedriver as uc
 
@@ -14,7 +12,6 @@ class BrowserWrapper:
         Initialize the BrowserWrapper and load the configuration.
         """
         self._driver = None
-        self.config = ConfigProvider().load_config_json()
 
     def get_driver(self, url):
         """
@@ -26,14 +23,7 @@ class BrowserWrapper:
         try:
             options = uc.ChromeOptions()
             options.add_argument("--disable-blink-features=AutomationControlled")
-            if self.config["browser"] == "Chrome":
-                self._driver = uc.Chrome(options=options)
-            elif self.config["browser"] == "Firefox":
-                self._driver = webdriver.Firefox()
-            elif self.config["browser"] == "Edge":
-                self._driver = webdriver.Edge()
-            else:
-                print("Browser does not exist")
+            self._driver = uc.Chrome(options=options)
 
             self._driver.get(url)
             self._driver.maximize_window()
