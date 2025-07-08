@@ -1,9 +1,14 @@
+import ssl
+
+# Disable SSL certificate verification
+ssl._create_default_https_context = ssl._create_unverified_context
+
 import time
 import unittest
 from infra.browser_wrapper import BrowserWrapper
 
 
-class OpenGoogleTest(unittest.TestCase):
+class OpenAzureVSTSTest(unittest.TestCase):
 
     # Before all - Called automatically
     def setUp(self):
@@ -14,7 +19,7 @@ class OpenGoogleTest(unittest.TestCase):
         and navigates to the specified URL.
         """
         self.browser = BrowserWrapper()
-        self.driver = self.browser.get_driver("https://www.google.com/")
+        self.driver = self.browser.get_driver("https://bwiiltiadotfs.eu.jnj.com/tfs/BiosenseCollection/Carto3/_workitems/myactivity/")
 
     def tearDown(self):
         """
@@ -22,7 +27,8 @@ class OpenGoogleTest(unittest.TestCase):
         """
         self.browser.close_browser()
 
-    def test_add_board_to_favorites(self):
+    @staticmethod
+    def test_wait():
         time.sleep(5)
 
 
