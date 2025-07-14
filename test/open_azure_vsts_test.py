@@ -29,7 +29,7 @@ class OpenAzureVSTSTest(unittest.TestCase):
 
     @staticmethod
     def test_wait():
-        time.sleep(5)
+        time.sleep(10)
 
 
 if __name__ == '__main__':

@@ -23,6 +23,7 @@ class BrowserWrapper:
         try:
             options = uc.ChromeOptions()
             options.add_argument("--disable-blink-features=AutomationControlled")
+            options.add_argument("--headless")
             self._driver = uc.Chrome(options=options)
 
             self._driver.get(url)
