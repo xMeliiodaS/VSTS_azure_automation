@@ -1,5 +1,7 @@
 import ssl
 
+from selenium.webdriver.common.by import By
+
 # Disable SSL certificate verification
 ssl._create_default_https_context = ssl._create_unverified_context
 
@@ -20,6 +22,7 @@ class OpenAzureVSTSTest(unittest.TestCase):
         """
         self.browser = BrowserWrapper()
         self.driver = self.browser.get_driver("https://bwiiltiadotfs.eu.jnj.com/tfs/BiosenseCollection/Carto3/_workitems/myactivity/")
+        self.driver.find_element(By.ID,'__bolt-textfield-input-1' )
 
     def tearDown(self):
         """
@@ -29,7 +32,7 @@ class OpenAzureVSTSTest(unittest.TestCase):
 
     @staticmethod
     def test_wait():
-        time.sleep(10)
+        time.sleep(15)
 
 
 if __name__ == '__main__':
