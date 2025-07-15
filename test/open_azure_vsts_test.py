@@ -22,7 +22,6 @@ class OpenAzureVSTSTest(unittest.TestCase):
         """
         self.browser = BrowserWrapper()
         self.driver = self.browser.get_driver("https://bwiiltiadotfs.eu.jnj.com/tfs/BiosenseCollection/Carto3/_workitems/myactivity/")
-        self.driver.find_element(By.ID,'__bolt-textfield-input-1' )
 
     def tearDown(self):
         """
