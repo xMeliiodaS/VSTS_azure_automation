@@ -10,4 +10,5 @@ def work_with_exel():
         id_and_defect[f"ID: {row['ID']}"] = f"Bug: {round(row['Bugs No. V8'])}"
         print(id_and_defect)
 
+
 work_with_exel()

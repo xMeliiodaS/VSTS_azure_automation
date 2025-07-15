@@ -4,6 +4,8 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.wait import WebDriverWait
 
 from infra.base_page import BasePage
+
+
 class OpenAzureAstsTest(BasePage):
     # Locators
 
@@ -18,4 +20,3 @@ class OpenAzureAstsTest(BasePage):
         """
         Clicks the search bar.
         """
-

@@ -21,7 +21,8 @@ class OpenAzureVSTSTest(unittest.TestCase):
         and navigates to the specified URL.
         """
         self.browser = BrowserWrapper()
-        self.driver = self.browser.get_driver("https://bwiiltiadotfs.eu.jnj.com/tfs/BiosenseCollection/Carto3/_workitems/myactivity/")
+        self.driver = self.browser.get_driver(
+            "https://bwiiltiadotfs.eu.jnj.com/tfs/BiosenseCollection/Carto3/_workitems/myactivity/")
 
     def tearDown(self):
         """
