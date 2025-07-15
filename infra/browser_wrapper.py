@@ -22,8 +22,15 @@ class BrowserWrapper:
         """
         try:
             options = uc.ChromeOptions()
-            options.add_argument("--disable-blink-features=AutomationControlled")
             options.add_argument("--headless")
+            options.add_argument("--disable-gpu")
+            options.add_argument("--no-sandbox")
+            options.add_argument("--disable-dev-shm-usage")
+            options.add_argument("--disable-extensions")
+            options.add_argument("--disable-infobars")
+            options.add_argument("--window-size=2560,1440")  # 2K screen simulation
+            options.add_argument("--disable-blink-features=AutomationControlled")
+
             self._driver = uc.Chrome(options=options)
 
             self._driver.get(url)
