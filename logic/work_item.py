@@ -16,7 +16,7 @@ class WorkItem(BasePage):
         """
         super().__init__(driver)
 
-    def fill_bug_id_input(self, std_id_list):
+    def fill_std_id_input(self, std_id_list):
         """
         Fills the STD ID field according to the given list.
         """
