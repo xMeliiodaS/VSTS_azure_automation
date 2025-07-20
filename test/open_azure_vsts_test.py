@@ -1,14 +1,11 @@
 import ssl
-
-from selenium.webdriver.common.by import By
-
 # Disable SSL certificate verification
 ssl._create_default_https_context = ssl._create_unverified_context
 
 import time
 import unittest
 from infra.browser_wrapper import BrowserWrapper
-
+from logic.work_items import WorkItems
 
 class OpenAzureVSTSTest(unittest.TestCase):
 
@@ -30,9 +27,11 @@ class OpenAzureVSTSTest(unittest.TestCase):
         """
         self.browser.close_browser()
 
-    @staticmethod
-    def test_wait():
-        time.sleep(15)
+
+    def test_wait(self):
+        a = WorkItems(self.driver)
+        a.fill_bug_id_input("TEST")
+        time.sleep(5)
 
 
 if __name__ == '__main__':
