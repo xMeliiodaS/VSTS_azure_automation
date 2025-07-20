@@ -28,9 +28,19 @@ class OpenAzureVSTSTest(unittest.TestCase):
         self.browser.close_browser()
 
 
-    def test_wait(self):
-        a = WorkItems(self.driver)
-        a.fill_bug_id_input("TEST")
+    def test_found_bug_and_check_std_id(self):
+        """
+            Searches for a bug by its ID and clicks on the corresponding work item row in Azure DevOps.
+        """
+        work_item = WorkItems(self.driver)
+
+        # Send the bug ID to the search input
+        work_item.fill_bug_id_input("278590")
+
+        # Click on the Bug Row found in the search results
+        work_item.click_on_searched_bug_row()
+
+
         time.sleep(5)
 
 

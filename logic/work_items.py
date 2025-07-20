@@ -6,8 +6,9 @@ from infra.base_page import BasePage
 
 
 class WorkItems(BasePage):
-    # Locators
-    SEARCH_BAR_INPUT = '#\_\_bolt-textfield-input-1'
+    # -----------------Locators Related to Bugs-----------------
+    SEARCH_BAR_INPUT = '#__bolt-textfield-input-1'
+    BUG_OBJECT = 'div[data-automationid="DetailsRow"][data-item-key="0"]'
 
     def __init__(self, driver):
         """
@@ -23,4 +24,9 @@ class WorkItems(BasePage):
         WebDriverWait(self._driver, 20).until(
             EC.element_to_be_clickable((By.CSS_SELECTOR, self.SEARCH_BAR_INPUT))).send_keys(bug_id)
 
-
+    def click_on_searched_bug_row(self):
+        """
+        Clicks on the bug (work item) row in the search results after searching by bug ID.
+        """
+        WebDriverWait(self._driver, 20).until(
+            EC.element_to_be_clickable((By.CSS_SELECTOR, self.BUG_OBJECT))).click()
