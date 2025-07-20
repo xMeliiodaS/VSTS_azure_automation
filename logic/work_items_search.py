@@ -5,7 +5,7 @@ from selenium.webdriver.support.wait import WebDriverWait
 from infra.base_page import BasePage
 
 
-class WorkItems(BasePage):
+class WorkItemsSearch(BasePage):
     # -----------------Locators Related to Bugs-----------------
     SEARCH_BAR_INPUT = '#__bolt-textfield-input-1'
     BUG_OBJECT = 'div[data-automationid="DetailsRow"][data-item-key="0"]'

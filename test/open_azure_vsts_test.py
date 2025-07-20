@@ -5,7 +5,7 @@ ssl._create_default_https_context = ssl._create_unverified_context
 import time
 import unittest
 from infra.browser_wrapper import BrowserWrapper
-from logic.work_items import WorkItems
+from logic.work_items_search import WorkItemsSearch
 
 class OpenAzureVSTSTest(unittest.TestCase):
 
@@ -32,7 +32,7 @@ class OpenAzureVSTSTest(unittest.TestCase):
         """
             Searches for a bug by its ID and clicks on the corresponding work item row in Azure DevOps.
         """
-        work_item = WorkItems(self.driver)
+        work_item = WorkItemsSearch(self.driver)
 
         # Send the bug ID to the search input
         work_item.fill_bug_id_input("278590")
