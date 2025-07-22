@@ -13,5 +13,5 @@ def get_bug_to_tests_map(excel_path):
     return dict(bug_to_tests)  # Convert to regular dict if needed
 #
 # # Example usage:
-# bug_map = get_bug_to_tests_map("Escort - CARTOSOUND 4D - Clinical WF.xlsx")
-# print(bug_map)
+bug_map = get_bug_to_tests_map("Escort - CARTOSOUND 4D - Clinical WF.xlsx")
+print(bug_map)

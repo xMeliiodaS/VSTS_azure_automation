@@ -63,7 +63,6 @@ class OpenAzureVSTSTest(unittest.TestCase):
             self.assertTrue(ok,
                             f"Bug {bug_id}: STD ID field invalid! Value: '{field_val}' | Expected: empty or contains one of {test_ids}")
 
-            time.sleep(1)  # Just for demo—remove or adjust for speed
             base_page_app = BasePageApp(self.driver)
             base_page_app.close_current_bug_button()
 
