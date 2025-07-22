@@ -34,3 +34,9 @@ class BasePage:
 
     def get_current_url(self):
         return self._driver.current_url
+
+    def navigate_back(self):
+        """
+        Navigate back in the browser history (Browser's back arrow).
+        """
+        self._driver.back()

@@ -11,7 +11,7 @@ def get_bug_to_tests_map(excel_path):
         test_id = row["ID"]
         bug_to_tests[bug_id].append(test_id)
     return dict(bug_to_tests)  # Convert to regular dict if needed
-
-# Example usage:
-bug_map = get_bug_to_tests_map("Escort - CARTOSOUND 4D - Clinical WF.xlsx")
-print(bug_map)
+#
+# # Example usage:
+# bug_map = get_bug_to_tests_map("Escort - CARTOSOUND 4D - Clinical WF.xlsx")
+# print(bug_map)
