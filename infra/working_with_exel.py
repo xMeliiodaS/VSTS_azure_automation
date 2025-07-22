@@ -1,6 +1,7 @@
 import pandas as pd
 from collections import defaultdict
 
+
 def get_bug_to_tests_map(excel_path):
     df = pd.read_excel(excel_path)
     with_bugs = df[df["Bugs No. V8"].apply(lambda x: isinstance(x, (int, float)) and not pd.isna(x))]

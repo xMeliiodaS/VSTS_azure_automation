@@ -6,9 +6,7 @@ from logic.updated_work_items_search import UpdatedWorkItemsSearch
 # Disable SSL certificate verification
 ssl._create_default_https_context = ssl._create_unverified_context
 
-import time
 import unittest
-from infra.base_page import BasePage
 from infra.browser_wrapper import BrowserWrapper
 from logic.work_items_search import WorkItemsSearch
 from infra.working_with_exel import get_bug_to_tests_map

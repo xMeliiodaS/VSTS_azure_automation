@@ -31,11 +31,3 @@ class UpdatedWorkItemsSearch(BasePage):
         search_bar.send_keys(bug_id)
 
         search_bar.send_keys(Keys.ENTER)
-
-    def close_current_bug_button(self):
-        """
-        Exit the opened window of the current bug.
-        """
-        WebDriverWait(self._driver, 20).until(
-            EC.element_to_be_clickable((By.CSS_SELECTOR, self.CLOSE_CURRENT_BUG_BUTTON))).click()
-
