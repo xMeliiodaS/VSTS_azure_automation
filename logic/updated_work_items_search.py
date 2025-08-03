@@ -1,3 +1,4 @@
+import time
 from selenium.webdriver import Keys
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
@@ -30,4 +31,5 @@ class UpdatedWorkItemsSearch(BasePage):
 
         search_bar.send_keys(bug_id)
 
+        time.sleep(0.5)
         search_bar.send_keys(Keys.ENTER)

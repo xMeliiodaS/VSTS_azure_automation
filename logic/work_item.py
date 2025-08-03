@@ -21,7 +21,6 @@ class WorkItem(BasePage):
             EC.visibility_of_element_located((By.CSS_SELECTOR, self.STD_ID_FIELD)))
         return field.get_attribute("value")
 
-
     def fill_std_id_input(self, std_id_list):
         """
         Fills the STD ID field according to the given list.
