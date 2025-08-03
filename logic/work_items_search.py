@@ -7,7 +7,7 @@ from selenium.webdriver.support.wait import WebDriverWait
 from infra.base_page import BasePage
 
 
-class UpdatedWorkItemsSearch(BasePage):
+class WorkItemsSearch(BasePage):
     # -----------------Locators Related to Bugs-----------------
     SEARCH_BAR_INPUT = '#l1-search-input'
 

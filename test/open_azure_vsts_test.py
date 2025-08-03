@@ -1,7 +1,7 @@
 import ssl
 
 from logic.base_page_app import BasePageApp
-from logic.updated_work_items_search import UpdatedWorkItemsSearch
+from logic.work_items_search import WorkItemsSearch
 
 # Disable SSL certificate verification
 ssl._create_default_https_context = ssl._create_unverified_context
@@ -34,7 +34,7 @@ class OpenAzureVSTSTest(unittest.TestCase):
 
     def test_unique_bugs_std_id(self):
         bug_map_dict = get_bug_to_tests_map("../infra/Escort - CARTOSOUND 4D - Clinical WF.xlsx")
-        updated_work_items_search = UpdatedWorkItemsSearch(self.driver)
+        updated_work_items_search = WorkItemsSearch(self.driver)
 
         work_item = WorkItem(self.driver)
 
