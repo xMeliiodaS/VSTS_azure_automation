@@ -9,6 +9,7 @@ ssl._create_default_https_context = ssl._create_unverified_context
 import unittest
 from infra.browser_wrapper import BrowserWrapper
 from infra.working_with_exel import get_bug_to_tests_map
+from infra.config_provider import ConfigProvider
 from logic.work_item import WorkItem
 
 
@@ -23,8 +24,9 @@ class OpenAzureVSTSTest(unittest.TestCase):
         and navigates to the specified URL.
         """
         self.browser = BrowserWrapper()
-        self.driver = self.browser.get_driver(
-            "https://bwiiltiadotfs.eu.jnj.com/tfs/BiosenseCollection/Carto3/_workitems/myactivity/")
+        self.config = ConfigProvider.load_config_json()
+
+        self.driver = self.browser.get_driver(self.config["url"])
 
     def tearDown(self):
         """
