@@ -1,16 +1,16 @@
 import ssl
-
-from logic.base_page_app import BasePageApp
-from logic.work_items_search import WorkItemsSearch
-
 # Disable SSL certificate verification
 ssl._create_default_https_context = ssl._create_unverified_context
 
 import unittest
+
+from logic.work_item import WorkItem
+from logic.base_page_app import BasePageApp
+from logic.work_items_search import WorkItemsSearch
+
+from infra.config_provider import ConfigProvider
 from infra.browser_wrapper import BrowserWrapper
 from infra.working_with_exel import get_bug_to_tests_map
-from infra.config_provider import ConfigProvider
-from logic.work_item import WorkItem
 
 
 class OpenAzureVSTSTest(unittest.TestCase):
