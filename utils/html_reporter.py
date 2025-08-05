@@ -22,13 +22,16 @@ def export_html_report(results, report_title="📝 Automation Results for STD_ID
     df = pd.DataFrame(results)
 
     def row_style(row):
-        if "✅" in row.Status: return ['pass'] * len(row)
-        if "❌" in row.Status: return ['fail'] * len(row)
+        if "✅" in row.Status:
+            return ['color: #388e3c; font-weight: bold;'] * len(row)
+        if "❌" in row.Status:
+            return ['color: #c62828; font-weight: bold;'] * len(row)
         return [''] * len(row)
 
     styled = df.style.apply(row_style, axis=1)
 
     html_output = (
+            "<meta charset='UTF-8'>"
             f"<h2 style='text-align:center;'>{report_title}</h2>"
             + TABLE_STYLE
             + styled.hide(axis='index').to_html()
