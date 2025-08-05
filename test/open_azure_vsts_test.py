@@ -1,4 +1,8 @@
 import ssl
+import time
+
+import pandas as pd
+
 # Disable SSL certificate verification
 ssl._create_default_https_context = ssl._create_unverified_context
 
@@ -6,6 +10,7 @@ import unittest
 
 from logic.work_item import WorkItem
 from logic.base_page_app import BasePageApp
+from logic.std_id_validator import validate_std_id, build_result_record
 from logic.work_items_search import WorkItemsSearch
 
 from infra.config_provider import ConfigProvider
@@ -35,6 +40,8 @@ class OpenAzureVSTSTest(unittest.TestCase):
         self.browser.close_browser()
 
     def test_unique_bugs_std_id(self):
+        results = []
+
         bug_map_dict = get_bug_to_tests_map("../infra/Escort - CARTOSOUND 4D - Clinical WF.xlsx")
         updated_work_items_search = WorkItemsSearch(self.driver)
 
@@ -46,22 +53,27 @@ class OpenAzureVSTSTest(unittest.TestCase):
             # Search for the bug ID in Azure VSTS
             updated_work_items_search.fill_bug_id_input_and_press_enter(bug_id)
 
-            # Check if the STD ID field is empty or matches any related Test ID
-            std_id_empty = work_item.check_std_id_is_empty()
+            # Fetch STD_ID field from Azure
             field_val = work_item.get_std_id_value()
+            field_val_str = str(field_val) if field_val is not None else ''
 
             print(f"STD ID Value: {field_val}")
 
+            # Prepare expected Test Case IDs as strings
             expected_test_ids = [str(tid) for tid in test_ids]
-            field_val_str = str(field_val)
 
-            matches = [tid for tid in expected_test_ids if tid in field_val_str]
-            ok = std_id_empty or bool(matches)
-            self.assertTrue(ok,
-                            f"Bug {bug_id}: STD ID field invalid! Value: '{field_val}' | Expected: empty or contains one of {test_ids}")
+            ok, comment = validate_std_id(field_val, expected_test_ids)
+            status_str = "✅ Valid" if ok else "❌ Invalid"
 
+            # Save result for table (using result builder)
+            results.append(build_result_record(bug_id, test_ids, field_val, status_str, comment))
+
+            print(results)
+
+            # Close current bug view and wait
             base_page_app = BasePageApp(self.driver)
             base_page_app.close_current_bug_button()
+            time.sleep(4)  # adjust as needed
 
 
 if __name__ == '__main__':
