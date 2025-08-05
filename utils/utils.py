@@ -9,7 +9,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.common import TimeoutException, NoSuchElementException
 
 
-def safe_click(driver, css_selector, retries=3, wait_time=e):
+def safe_click(driver, css_selector, retries=3, wait_time=3):
     """
     Safely clicks an element with retries, handling any potential errors.
     :param driver:
