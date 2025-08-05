@@ -1,12 +1,11 @@
 import ssl
 import time
 
-import pandas as pd
-
 # Disable SSL certificate verification
 ssl._create_default_https_context = ssl._create_unverified_context
 
 import unittest
+from utils.html_reporter import export_html_report
 
 from logic.work_item import WorkItem
 from logic.base_page_app import BasePageApp
@@ -68,12 +67,14 @@ class OpenAzureVSTSTest(unittest.TestCase):
             # Save result for table (using result builder)
             results.append(build_result_record(bug_id, test_ids, field_val, status_str, comment))
 
-            print(results)
 
             # Close current bug view and wait
             base_page_app = BasePageApp(self.driver)
             base_page_app.close_current_bug_button()
             time.sleep(4)  # adjust as needed
+
+        if results:
+            export_html_report(results)
 
 
 if __name__ == '__main__':
