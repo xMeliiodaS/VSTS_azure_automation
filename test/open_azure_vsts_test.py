@@ -9,7 +9,7 @@ from utils.html_reporter import export_html_report
 
 from logic.work_item import WorkItem
 from logic.base_page_app import BasePageApp
-from logic.std_id_validator import validate_std_id, build_result_record
+from utils.std_id_validator import validate_std_id, build_result_record
 from logic.work_items_search import WorkItemsSearch
 
 from infra.config_provider import ConfigProvider
@@ -46,27 +46,23 @@ class OpenAzureVSTSTest(unittest.TestCase):
 
         work_item = WorkItem(self.driver)
 
-        for bug_id, test_ids in bug_map_dict.items():
-            print(f"\n🔍 Checking Bug {bug_id}, linked to Test IDs: {test_ids}")
+        for bug_id_in_excel, test_id_in_excel in bug_map_dict.items():
+            print(f"\n🔍 Checking Bug {bug_id_in_excel}, linked to Test IDs: {test_id_in_excel} in Excel")
 
             # Search for the bug ID in Azure VSTS
-            updated_work_items_search.fill_bug_id_input_and_press_enter(bug_id)
+            updated_work_items_search.fill_bug_id_input_and_press_enter(bug_id_in_excel)
 
             # Fetch STD_ID field from Azure
-            field_val = work_item.get_std_id_value()
-            field_val_str = str(field_val) if field_val is not None else ''
-
-            print(f"STD ID Value: {field_val}")
+            vsts_std_id_field_val = work_item.get_std_id_value()
 
             # Prepare expected Test Case IDs as strings
-            expected_test_ids = [str(tid) for tid in test_ids]
+            expected_test_ids = [str(tid) for tid in test_id_in_excel]
 
-            ok, comment = validate_std_id(field_val, expected_test_ids)
+            ok, comment = validate_std_id(vsts_std_id_field_val, expected_test_ids)
             status_str = "✅ Valid" if ok else "❌ Invalid"
 
             # Save result for table (using result builder)
-            results.append(build_result_record(bug_id, test_ids, field_val, status_str, comment))
-
+            results.append(build_result_record(bug_id_in_excel, test_id_in_excel, vsts_std_id_field_val, status_str, comment))
 
             # Close current bug view and wait
             base_page_app = BasePageApp(self.driver)
