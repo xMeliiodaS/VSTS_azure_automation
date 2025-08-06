@@ -1,9 +1,6 @@
+# File: test/open_azure_vsts_test.py
+
 import ssl
-import time
-
-# Disable SSL certificate verification
-ssl._create_default_https_context = ssl._create_unverified_context
-
 import unittest
 from utils.html_reporter import export_html_report
 
@@ -19,17 +16,14 @@ from infra.working_with_exel import get_bug_to_tests_map
 
 class OpenAzureVSTSTest(unittest.TestCase):
 
-    # Before all - Called automatically
     def setUp(self):
         """
         Set up the test environment before each test.
-
-        This method initializes the browser, loads the configuration,
-        and navigates to the specified URL.
         """
+        ssl._create_default_https_context = ssl._create_unverified_context
+
         self.browser = BrowserWrapper()
         self.config = ConfigProvider.load_config_json()
-
         self.driver = self.browser.get_driver(self.config["url"])
 
     def tearDown(self):
@@ -40,37 +34,50 @@ class OpenAzureVSTSTest(unittest.TestCase):
 
     def test_unique_bugs_std_id(self):
         results = []
-
         bug_map_dict = get_bug_to_tests_map("../infra/Book1.xlsx")
-        updated_work_items_search = WorkItemsSearch(self.driver)
+        work_items_search = WorkItemsSearch(self.driver)
+        self.work_item = WorkItem(self.driver)
 
-        work_item = WorkItem(self.driver)
+        for bug_id, test_ids in bug_map_dict.items():
+            self.process_single_bug(bug_id, test_ids, self.work_item, work_items_search, results)
 
-        for bug_id_in_excel, test_id_in_excel in bug_map_dict.items():
-            print(f"\n🔍 Checking Bug {bug_id_in_excel}, linked to Test IDs: {test_id_in_excel} in Excel")
-
-            # Search for the bug ID in Azure VSTS
-            updated_work_items_search.fill_bug_id_input_and_press_enter(bug_id_in_excel)
-
-            # Fetch STD_ID field from Azure
-            vsts_std_id_field_val = work_item.get_std_id_value()
-
-            # Prepare expected Test Case IDs as strings
-            expected_test_ids = [str(tid) for tid in test_id_in_excel]
-
-            ok, comment = validate_std_id(vsts_std_id_field_val, expected_test_ids)
-            status_str = "✅ Valid" if ok else "❌ Invalid"
-
-            # Save result for table (using result builder)
-            results.append(
-                build_result_record(bug_id_in_excel, test_id_in_excel, vsts_std_id_field_val, status_str, comment))
-
-            # Close current bug view and wait
+            # Close current bug view
             base_page_app = BasePageApp(self.driver)
             base_page_app.close_current_bug_button()
 
         if results:
             export_html_report(results)
+
+    def process_single_bug(self, bug_id, test_ids, work_item, work_items_search, results):
+        """
+        Handles searching, validating, saving results, and closing a bug in the workflow.
+        """
+        print(f"\n🔍 Checking Bug {bug_id}, linked to Test IDs: {test_ids} in Excel")
+
+        # Search for the bug ID in Azure VSTS
+        work_items_search.fill_bug_id_input_and_press_enter(bug_id)
+
+        # Fetch STD_ID field from Azure
+        std_id_field_val = work_item.get_std_id_value()
+
+        # Prepare expected Test Case IDs as strings
+        expected_test_ids = [str(tid) for tid in test_ids]
+
+        # Validate and build result
+        ok, comment = validate_std_id(std_id_field_val, expected_test_ids)
+        status_str = "✅" if ok else "❌"
+        self.handle_additional_info_std_id()
+        results.append(
+            build_result_record(bug_id, test_ids, std_id_field_val, status_str, comment)
+        )
+
+    def handle_additional_info_std_id(self):
+        """
+        Handles searching, validating, saving results, and closing a bug in the "Additional Info" Tab.
+        """
+        self.work_item.click_on_additional_info_tab()
+        a = self.work_item.get_additional_info_value()
+        print(a)
 
 
 if __name__ == '__main__':
