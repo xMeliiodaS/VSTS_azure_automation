@@ -1,5 +1,6 @@
 from selenium import common as c
 import undetected_chromedriver as uc
+import chromedriver_autoinstaller
 
 
 class BrowserWrapper:
@@ -21,27 +22,31 @@ class BrowserWrapper:
         :return: The WebDriver instance.
         """
         try:
+            # Automatically installs the matching chromedriver (no user setup needed!)
+            chromedriver_autoinstaller.install()
             options = uc.ChromeOptions()
-            options.add_argument("--headless")
+
+            # options.add_argument("--headless")
             options.add_argument("--disable-gpu")
             options.add_argument("--no-sandbox")
             options.add_argument("--disable-dev-shm-usage")
             options.add_argument("--disable-extensions")
             options.add_argument("--disable-infobars")
-            # options.add_argument("--window-size=2560,1440")  # 2K screen simulation
             options.add_argument("--disable-blink-features=AutomationControlled")
 
             self._driver = uc.Chrome(options=options)
-
             self._driver.get(url)
             self._driver.maximize_window()
+
             return self._driver
 
         except c.WebDriverException as e:
-            print("Could not find web driver:", e)
+            raise RuntimeError("Failed to obtain a working WebDriver after multiple attempts")
 
     def close_browser(self):
         """
         Close the browser and quit the WebDriver.
         """
         self._driver.quit()
+
+# chrome://settings/help

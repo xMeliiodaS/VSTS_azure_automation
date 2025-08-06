@@ -12,7 +12,6 @@ def export_html_report(results, report_title="📝 Automation Results for STD_ID
       th, td { padding: 10px; border: 1px solid #ccc; text-align: left; }
       th { background: #3f51b5; color: white; }
       tr:nth-child(even) { background: #e8eaf6; }
-      tr:hover { background: #d1c4e9; }
       td:last-child { font-style: italic; }
       .pass { color: #388e3c; font-weight: bold; }
       .fail { color: #c62828; font-weight: bold; }
