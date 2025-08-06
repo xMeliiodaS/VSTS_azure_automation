@@ -32,5 +32,5 @@ class WorkItemsSearch(BasePage):
 
         search_bar.send_keys(bug_id)
 
-        time.sleep(0.5)
+        time.sleep(0.2)
         search_bar.send_keys(Keys.ENTER)

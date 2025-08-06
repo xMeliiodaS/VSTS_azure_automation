@@ -41,7 +41,7 @@ class OpenAzureVSTSTest(unittest.TestCase):
     def test_unique_bugs_std_id(self):
         results = []
 
-        bug_map_dict = get_bug_to_tests_map("../infra/Escort - CARTOSOUND 4D - Clinical WF.xlsx")
+        bug_map_dict = get_bug_to_tests_map("../infra/Book1.xlsx")
         updated_work_items_search = WorkItemsSearch(self.driver)
 
         work_item = WorkItem(self.driver)
@@ -62,12 +62,12 @@ class OpenAzureVSTSTest(unittest.TestCase):
             status_str = "✅ Valid" if ok else "❌ Invalid"
 
             # Save result for table (using result builder)
-            results.append(build_result_record(bug_id_in_excel, test_id_in_excel, vsts_std_id_field_val, status_str, comment))
+            results.append(
+                build_result_record(bug_id_in_excel, test_id_in_excel, vsts_std_id_field_val, status_str, comment))
 
             # Close current bug view and wait
             base_page_app = BasePageApp(self.driver)
             base_page_app.close_current_bug_button()
-            time.sleep(4)  # adjust as needed
 
         if results:
             export_html_report(results)
