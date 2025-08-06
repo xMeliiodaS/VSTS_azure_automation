@@ -1,7 +1,6 @@
 import pandas as pd
 from collections import defaultdict
 
-
 def get_bug_to_tests_map(excel_path):
     df = pd.read_excel(excel_path)
 
@@ -18,17 +17,27 @@ def get_bug_to_tests_map(excel_path):
             f"No column containing 'Bug' or 'Defect' found! Columns in file: {list(df.columns)}"
         )
 
-    # Only rows with valid bug/defect number
-    with_bugs = df[df[bug_col].apply(lambda x: isinstance(x, (int, float)) and not pd.isna(x))]
+    # Keep rows with valid bug/defect numbers
+    with_bugs = df[df[bug_col].apply(lambda x: isinstance(x, (int, float, str)) and not pd.isna(x))]
 
     bug_to_tests = defaultdict(list)
     for _, row in with_bugs.iterrows():
-        bug_id = str(int(round(row[bug_col])))  # Make bug_id a string
+        raw_bug_val = str(row[bug_col])  # could be "273427" or "273427, 273421"
         test_id = row["ID"]
-        bug_to_tests[bug_id].append(test_id)
+
+        # Split by comma, strip whitespace, and handle each bug ID
+        bug_ids = [bug.strip() for bug in raw_bug_val.split(",") if bug.strip()]
+
+        for bug_id in bug_ids:
+            # Only add if it's a number (might contain junk in Excel)
+            if bug_id.isdigit():
+                bug_to_tests[bug_id].append(test_id)
+            # You might want to add a warning if bug_id is not all digits
+
     return dict(bug_to_tests)
 
 
+
 # # Example usage:
-bug_map = get_bug_to_tests_map("Book1.xlsx")
-print(bug_map)
+# bug_map = get_bug_to_tests_map("Book1.xlsx")
+# print(bug_map)
