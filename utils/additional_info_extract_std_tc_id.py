@@ -39,41 +39,72 @@ def extract_std_groups_from_additional_info(text):
                 groups[header.strip()] = unique_ids
         else:
             i += 1
-    return groups
+    return dict(groups)
 
 
 # =============== TEST IT ✅ ===================
+# test_text = """
+# Configuration (Catheters/WS/ULS/PIU): No
+# How do the following states could impact defect’s severity (Delete or Fill in)
+# Ablation: No
+# Pacing: No
+# Regression: Yes, Regression from Previous version V8 Ph2 LMR
+# Data loss: No
+# Review: Not Relevant
+# Backup/Restore: Not Relevant
+#
+#
+#
+# Additional Tests Cycle 3 STD:
+# #432
+#
+# Additional Tests Cycle 4 STD
+# 1370, 357, 1337, 1372, 1373, 1375, 1376, 1378, 1379, 1399, 1424, 979
+#
+# Additional Tests Cycle 4:
+# ID: 1111
+#
+# Feather - Unique Functionality STD TC ID:
+# 780 + 781
+#
+#
+# Additional Tests Cycle 6 STD
+# ID: 1569-1570
+#
+# Feather - Unique Functionality STD TC ID:
+# 345
+#
+# Example MetalSensorData values:
+#  <MetalSensorData InfoMetalThresholdMM = "1.50" SubOptimalMetalThresholdMM="2.99" BadMetalThresholdMM="9.99" InfoMetalThresholdDeg = "9.99" SubOptimalMetalThresholdDeg="14.99" BadMetalThresholdDeg="19.99" />
+#
+# """
+
 test_text = """
 Configuration (Catheters/WS/ULS/PIU): No
 How do the following states could impact defect’s severity (Delete or Fill in)
 Ablation: No
 Pacing: No
-Regression: Yes, Regression from Previous version V8 Ph2 LMR
+Regression: No, Not relevant to Previous version V8 P2 LMR
 Data loss: No
 Review: Not Relevant
 Backup/Restore: Not Relevant 
   
-  
-  
-Additional Tests Cycle 3 STD: 
-#432 
-
-Additional Tests Cycle 4 STD
-1370, 357, 1337, 1372, 1373, 1375, 1376, 1378, 1379, 1399, 1424, 979 
-
-Additional Tests Cycle 4:
-ID: 1111 
-
 Feather - Unique Functionality STD TC ID: 
 780 + 781 
   
   
 Additional Tests Cycle 6 STD  
 ID: 1569-1570 
-
-Feather - Unique Functionality STD TC ID: 
-345 
-
+  
+  
+****Shaper tracker is active. *** 
+  
+  
+Why does this bug happen and what triggers it? 
+Basically, the Feather Shape Tracker XML overrides the magnetic thresholds in the registry. As a result, the Magnetic Indication (horseshoe) display aligns with the thresholds defined in the Feather Shape Tracker XML, while the colors in the Metal Values window are based on the thresholds set in the registry. 
+  
+  
+  
 Example MetalSensorData values: 
  <MetalSensorData InfoMetalThresholdMM = "1.50" SubOptimalMetalThresholdMM="2.99" BadMetalThresholdMM="9.99" InfoMetalThresholdDeg = "9.99" SubOptimalMetalThresholdDeg="14.99" BadMetalThresholdDeg="19.99" />
 
@@ -81,5 +112,7 @@ Example MetalSensorData values:
 
 if __name__ == "__main__":
     groups = extract_std_groups_from_additional_info(test_text)
-    for header, ids in groups.items():
-        print(f"{header} -> {ids}")
+#     for header, ids in groups.items():
+#         print(f"{header} -> {ids}")
+#
+    print(groups)
