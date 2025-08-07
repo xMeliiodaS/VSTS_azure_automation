@@ -19,7 +19,7 @@ class OpenAzureVSTSTest(unittest.TestCase):
 
     def setUp(self):
         """
-        Set up the test environment before each test.
+        Set up the test environment before automation.
         """
         ssl._create_default_https_context = ssl._create_unverified_context
 
@@ -35,6 +35,9 @@ class OpenAzureVSTSTest(unittest.TestCase):
         self.browser.close_browser()
 
     def test_unique_bugs_std_id(self):
+        """
+        Validate each bug by checking its STD_ID field, close UI, then output HTML report.
+        """
         results = []
         work_items_search = WorkItemsSearch(self.driver)
         self.work_item = WorkItem(self.driver)
@@ -51,7 +54,7 @@ class OpenAzureVSTSTest(unittest.TestCase):
 
     def process_single_bug(self, bug_id, test_ids, work_item, work_items_search, results):
         """
-        Handles searching, validating, saving results, and closing a bug in the workflow.
+        Handles searching and validating in the workflow.
         """
         print(f"\n🔍 Checking Bug {bug_id}, linked to Test IDs: {test_ids} in Excel")
 
@@ -76,7 +79,7 @@ class OpenAzureVSTSTest(unittest.TestCase):
 
     def handle_additional_info_std_id(self):
         """
-        Handles searching, validating, saving results, and closing a bug in the "Additional Info" Tab.
+        Handles searching and validating "Additional Info" Tab.
         """
         self.work_item.click_on_additional_info_tab()
         a = self.work_item.get_additional_info_value()
