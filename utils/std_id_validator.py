@@ -4,19 +4,17 @@ def validate_std_id(field_val, expected_test_ids):
     expected_test_ids = [str(tid) for tid in expected_test_ids]
 
     if not field_std_ids:
-        return False, "❌ STD_ID is empty."
+        return False, "STD_ID is empty."
     elif set(field_std_ids) != set(expected_test_ids):
         return False, (
-            f"❌ Test Case IDs don't match! Found: {field_std_ids}, "
-            f"Expected: {expected_test_ids}"
-        )
+            f"Test Case IDs don't match! Found: {field_std_ids}, "
+            f"Expected: {expected_test_ids}")
     elif len(field_std_ids) != len(expected_test_ids):
         return False, (
-            f"❌ Number of Test Case IDs doesn't match! "
-            f"Found: {len(field_std_ids)}, Expected: {len(expected_test_ids)}"
-        )
+            f"Number of Test Case IDs doesn't match! "
+            f"Found: {len(field_std_ids)}, Expected: {len(expected_test_ids)}")
     else:
-        return True, "✅ STD_ID matches Test Case IDs from Excel."
+        return True, "STD_ID matches Test Case IDs from Excel."
 
 
 # File: logic/results_builder.py
