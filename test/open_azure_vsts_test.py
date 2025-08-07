@@ -66,6 +66,7 @@ class OpenAzureVSTSTest(unittest.TestCase):
 
         # Validate and build result
         ok, comment = validate_std_id(std_id_field_val, expected_test_ids)
+
         status_str = "✅" if ok else "❌"
 
         # Handling Additional info if
