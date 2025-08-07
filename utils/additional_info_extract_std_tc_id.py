@@ -1,6 +1,7 @@
 import re
 from collections import OrderedDict
 
+
 def extract_std_groups_from_additional_info(text):
     """
     Handles multi-line headers: e.g. 'Additional Tests Cycle 6 STD' + '\nID:'
@@ -29,7 +30,7 @@ def extract_std_groups_from_additional_info(text):
             while i < len(lines) and lines[i]:
                 # Ranges
                 for start, end in re.findall(r'(\d+)\s*[-–]\s*(\d+)', lines[i]):
-                    ids.extend(map(str, range(int(start), int(end)+1)))
+                    ids.extend(map(str, range(int(start), int(end) + 1)))
                 # Hashtags, TC, and plain nums
                 ids += re.findall(r'#?T?C?(\d{3,6})\b', lines[i])
                 i += 1
@@ -39,6 +40,8 @@ def extract_std_groups_from_additional_info(text):
         else:
             i += 1
     return groups
+
+
 # =============== TEST IT ✅ ===================
 test_text = """
 Configuration (Catheters/WS/ULS/PIU): No
@@ -70,6 +73,10 @@ ID: 1569-1570
 
 Feather - Unique Functionality STD TC ID: 
 345 
+
+Example MetalSensorData values: 
+ <MetalSensorData InfoMetalThresholdMM = "1.50" SubOptimalMetalThresholdMM="2.99" BadMetalThresholdMM="9.99" InfoMetalThresholdDeg = "9.99" SubOptimalMetalThresholdDeg="14.99" BadMetalThresholdDeg="19.99" />
+
 """
 
 if __name__ == "__main__":
