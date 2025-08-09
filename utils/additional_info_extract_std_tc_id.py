@@ -107,7 +107,7 @@ Basically, the Feather Shape Tracker XML overrides the magnetic thresholds in th
   
 Example MetalSensorData values: 
  <MetalSensorData InfoMetalThresholdMM = "1.50" SubOptimalMetalThresholdMM="2.99" BadMetalThresholdMM="9.99" InfoMetalThresholdDeg = "9.99" SubOptimalMetalThresholdDeg="14.99" BadMetalThresholdDeg="19.99" />
-
+asdasd
 """
 
 if __name__ == "__main__":

@@ -1,4 +1,4 @@
-def validate_std_id(field_val, expected_test_ids):
+def validate_std_id(vsts_field_val, expected_test_ids):
     """
     Validates that the STD_ID field (from Azure) matches the expected test IDs from Excel.
     - field_val: The string from the STD_ID field in Azure
@@ -8,10 +8,10 @@ def validate_std_id(field_val, expected_test_ids):
         comment: Explanation string for UI/report
     """
     # Convert field value to comma-separated string, handle None as empty
-    field_val_str = str(field_val) if field_val is not None else ''
+    vsts_field_val_str = str(vsts_field_val) if vsts_field_val is not None else ''
 
     # Split by commas and strip whitespace to get list of IDs
-    field_std_ids = [id.strip() for id in field_val_str.split(',') if id.strip()]
+    field_std_ids = [id.strip() for id in vsts_field_val_str.split(',') if id.strip()]
 
     # Ensure expected_test_ids is also all strings (for reliable comparison)
     expected_test_ids = [str(tid) for tid in expected_test_ids]
