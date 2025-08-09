@@ -74,8 +74,8 @@ class OpenAzureVSTSTest(unittest.TestCase):
         status_str = "✅" if ok else "❌"
 
         if not ok:
-             if self.handle_additional_info_std_id():
-                 status_str = "✅"
+            if self.handle_additional_info_std_id():
+                status_str = "✅"
 
         results.append(build_result_record(bug_id, test_ids, std_id_field_val, status_str, comment))
 
@@ -84,14 +84,12 @@ class OpenAzureVSTSTest(unittest.TestCase):
         Handles searching and validating "Additional Info" Tab.
         """
         self.work_item.click_on_additional_info_tab()
-        additional_val = self.work_item.get_additional_info_value()
-        groups = extract_std_groups_from_additional_info(additional_val)
-        expected = set(self.expected_test_ids)
+        additional_info_text = self.work_item.get_additional_info_value()
+        groups = extract_std_groups_from_additional_info(additional_info_text)
 
-        for id_list in groups.values():
-            if set(id_list) == expected:
+        for tc_id_list in groups.values():
+            if tc_id_list == self.expected_test_ids:
                 return True  # Found a matching group
-
         # No match found in any group
         return False
 

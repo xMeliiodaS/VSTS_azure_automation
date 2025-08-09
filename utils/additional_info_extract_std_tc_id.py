@@ -112,7 +112,13 @@ Example MetalSensorData values:
 
 if __name__ == "__main__":
     groups = extract_std_groups_from_additional_info(test_text)
-#     for header, ids in groups.items():
-#         print(f"{header} -> {ids}")
-#
+
     print(groups)
+    expected = ['780', '781']
+
+    for tc_id_list in groups.values():
+
+        if tc_id_list == expected:
+            print(True)
+        else:
+            print(False)
