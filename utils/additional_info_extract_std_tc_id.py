@@ -99,7 +99,7 @@ ID: 1569-1570
   
 ****Shaper tracker is active. *** 
   
-  
+   
 Why does this bug happen and what triggers it? 
 Basically, the Feather Shape Tracker XML overrides the magnetic thresholds in the registry. As a result, the Magnetic Indication (horseshoe) display aligns with the thresholds defined in the Feather Shape Tracker XML, while the colors in the Metal Values window are based on the thresholds set in the registry. 
   
