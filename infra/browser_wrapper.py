@@ -1,6 +1,5 @@
 from selenium import common as c
-import undetected_chromedriver as uc
-import chromedriver_autoinstaller
+from selenium import webdriver
 
 
 class BrowserWrapper:
@@ -22,9 +21,9 @@ class BrowserWrapper:
         :return: The WebDriver instance.
         """
         try:
-            options = uc.ChromeOptions()
+            options = webdriver.ChromeOptions()
 
-            # options.add_argument("--headless")
+            options.add_argument("--headless")
             options.add_argument("--disable-gpu")
             options.add_argument("--no-sandbox")
             options.add_argument("--disable-dev-shm-usage")
@@ -32,7 +31,7 @@ class BrowserWrapper:
             options.add_argument("--disable-infobars")
             options.add_argument("--disable-blink-features=AutomationControlled")
 
-            self._driver = uc.Chrome(options=options)
+            self._driver = webdriver.Chrome(options=options)
             self._driver.get(url)
             self._driver.maximize_window()
 
