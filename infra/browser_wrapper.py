@@ -48,5 +48,3 @@ class BrowserWrapper:
         Close the browser and quit the WebDriver.
         """
         self._driver.quit()
-
-# chrome://settings/help
