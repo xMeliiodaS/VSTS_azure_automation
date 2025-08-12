@@ -22,8 +22,6 @@ class BrowserWrapper:
         :return: The WebDriver instance.
         """
         try:
-            # Automatically installs the matching chromedriver (no user setup needed!)
-            chromedriver_autoinstaller.install()
             options = uc.ChromeOptions()
 
             # options.add_argument("--headless")
