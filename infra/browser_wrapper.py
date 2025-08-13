@@ -1,5 +1,14 @@
-from selenium import common as c
+import os
+
 from selenium import webdriver
+from selenium import common as c
+from selenium.webdriver.chrome.service import Service
+from webdriver_manager.chrome import ChromeDriverManager
+
+
+# Disable SSL verification via environment variable
+os.environ['WDM_SSL_VERIFY'] = '0'
+
 
 
 class BrowserWrapper:
@@ -23,7 +32,7 @@ class BrowserWrapper:
         try:
             options = webdriver.ChromeOptions()
 
-            options.add_argument("--headless")
+            # options.add_argument("--headless")
             options.add_argument("--disable-gpu")
             options.add_argument("--no-sandbox")
             options.add_argument("--disable-dev-shm-usage")
@@ -31,7 +40,9 @@ class BrowserWrapper:
             options.add_argument("--disable-infobars")
             options.add_argument("--disable-blink-features=AutomationControlled")
 
-            self._driver = webdriver.Chrome(options=options)
+            service = Service(ChromeDriverManager().install())
+            self._driver = webdriver.Chrome(service=service, options=options)
+
             self._driver.get(url)
             self._driver.maximize_window()
 
