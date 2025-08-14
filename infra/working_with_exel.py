@@ -46,11 +46,11 @@ def get_bug_to_tests_map(excel_path):
 # Baseline Validation Rules
 # =========================
 COLUMN_MAP = {
-    "expected": ["expected_results", "expected_result", "expected_rresults"],
-    "results": ["test_results", "result"],
+    "expected": ["expected_results", "expected_result"],
+    "results": ["test_results", "test_result"],
     "bug": ["defect_no", "bug_no", "bugs_no", "bug_number"],
-    "comment": ["comment", "remarks"],
-    "id": ["id", "test_id", "test_id_number"]
+    "comment": ["comment"],
+    "id": ["id", "test_id"]
 }
 
 
@@ -124,8 +124,6 @@ def is_precondition_row(row, df):
     return True
 
 
-
-
 def validate_and_summarize(df):
     expected_col = get_column(df, "expected")
     results_col = get_column(df, "results")
@@ -155,7 +153,7 @@ def validate_and_summarize(df):
             df[expected_col].notna() &
             ~df[results_col].str.lower().eq("pass") &
             df[comment_col].eq("")
-        ]
+            ]
     }
 
     for rule_name, v_df in rules.items():
@@ -168,6 +166,7 @@ def validate_and_summarize(df):
         print("-" * 40)
 
     return rules
+
 
 if __name__ == "__main__":
     excel_path = "Book1.xlsx"
