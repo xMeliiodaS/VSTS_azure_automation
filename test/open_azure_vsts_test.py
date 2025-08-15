@@ -13,7 +13,7 @@ from logic.work_items_search import WorkItemsSearch
 
 from utils.html_reporter import export_html_report
 from utils.std_id_validator import validate_std_id, build_result_record
-from utils.additional_info_extract_std_tc_id import extract_std_groups_from_additional_info
+from utils.additional_info_extract_std_tc_id import extract_tc_ids_from_additional_info
 
 
 class OpenAzureVSTSTest(unittest.TestCase):
@@ -27,7 +27,7 @@ class OpenAzureVSTSTest(unittest.TestCase):
         self.browser = BrowserWrapper()
         self.config = ConfigProvider.load_config_json()
         self.driver = self.browser.get_driver(self.config["url"])
-        self.bug_map_dict = get_bug_to_tests_map("../infra/Book1.xlsx")
+        self.bug_map_dict = get_bug_to_tests_map(self.config["excel_path"])
 
     def tearDown(self):
         """
@@ -83,12 +83,15 @@ class OpenAzureVSTSTest(unittest.TestCase):
         """
         Handles searching and validating "Additional Info" Tab.
         """
+        # Get the STD name
+        std_name = self.config["std_name"]
+
         self.work_item.click_on_additional_info_tab()
         additional_info_text = self.work_item.get_additional_info_value()
-        groups = extract_std_groups_from_additional_info(additional_info_text)
+        tc_id_list = extract_tc_ids_from_additional_info(std_name, additional_info_text)
 
-        for tc_id_list in groups.values():
-            if tc_id_list == self.expected_test_ids:
+        for tc_id in tc_id_list:
+            if tc_id == self.expected_test_ids:
                 return True  # Found a matching group
         # No match found in any group
         return False

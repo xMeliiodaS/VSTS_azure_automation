@@ -1,124 +1,66 @@
 import re
-from collections import OrderedDict
 
 
-def extract_std_groups_from_additional_info(text):
+def extract_tc_ids_from_additional_info(std_name: str, additional_info_text: str) -> list[int]:
     """
-    Handles multi-line headers: e.g. 'Additional Tests Cycle 6 STD' + '\nID:'
-    Groups by any block where any header line or its immediate next ends with ':' and header contains 'STD' or 'ID'.
+    Extract test case IDs for a given std_name from additional_info_text.
+    Handles fuzzy matching and multiple separators.
     """
-    groups = OrderedDict()
-    lines = [ln.strip() for ln in text.splitlines()]
-    i = 0
-    while i < len(lines):
-        line = lines[i]
-        # Try to detect the start of a header: must mention STD or ID, anywhere (case-insensitive), even without colon
-        if re.search(r'\b(std|id)\b', line, re.I):
-            # Look ahead: if next non-empty line ends with ":", it's part of the header!
-            header = line
-            j = i + 1
-            while j < len(lines) and lines[j] == '':
-                j += 1
-            if j < len(lines) and lines[j].endswith(":"):
-                header = f"{header} {lines[j]}"
-                i = j  # Move i to end of header
-            elif line.endswith(":"):
-                header = line
-            # Now, collect lines after header as IDs, until next blank or end
-            ids = []
-            i += 1
-            while i < len(lines) and lines[i]:
-                # Ranges
-                for start, end in re.findall(r'(\d+)\s*[-–]\s*(\d+)', lines[i]):
-                    ids.extend(map(str, range(int(start), int(end) + 1)))
-                # Hashtags, TC, and plain nums
-                ids += re.findall(r'#?T?C?(\d{3,6})\b', lines[i])
-                i += 1
-            unique_ids = sorted(set(ids), key=ids.index)
-            if unique_ids:
-                groups[header.strip()] = unique_ids
-        else:
-            i += 1
-    return dict(groups)
+    lines = additional_info_text.splitlines()
+    std_name_norm = re.sub(r"[\s\-]", "", std_name.lower())  # normalize
+    tc_ids = []
 
+    capture = False
+    for line in lines:
+        line_norm = re.sub(r"[\s\-]", "", line.lower())
+        if std_name_norm in line_norm:
+            capture = True
+            continue
 
-# =============== TEST IT ✅ ===================
-# test_text = """
-# Configuration (Catheters/WS/ULS/PIU): No
-# How do the following states could impact defect’s severity (Delete or Fill in)
-# Ablation: No
-# Pacing: No
-# Regression: Yes, Regression from Previous version V8 Ph2 LMR
-# Data loss: No
-# Review: Not Relevant
-# Backup/Restore: Not Relevant
-#
-#
-#
-# Additional Tests Cycle 3 STD:
-# #432
-#
-# Additional Tests Cycle 4 STD
-# 1370, 357, 1337, 1372, 1373, 1375, 1376, 1378, 1379, 1399, 1424, 979
-#
-# Additional Tests Cycle 4:
-# ID: 1111
-#
-# Feather - Unique Functionality STD TC ID:
-# 780 + 781
-#
-#
-# Additional Tests Cycle 6 STD
-# ID: 1569-1570
-#
-# Feather - Unique Functionality STD TC ID:
-# 345
-#
-# Example MetalSensorData values:
-#  <MetalSensorData InfoMetalThresholdMM = "1.50" SubOptimalMetalThresholdMM="2.99" BadMetalThresholdMM="9.99" InfoMetalThresholdDeg = "9.99" SubOptimalMetalThresholdDeg="14.99" BadMetalThresholdDeg="19.99" />
-#
-# """
+        if capture:
+            # stop if we reach another STD name or header
+            if "std" in line_norm:
+                break
 
-test_text = """
-Configuration (Catheters/WS/ULS/PIU): No
-How do the following states could impact defect’s severity (Delete or Fill in)
-Ablation: No
-Pacing: No
-Regression: No, Not relevant to Previous version V8 P2 LMR
-Data loss: No
-Review: Not Relevant
-Backup/Restore: Not Relevant 
-  
-Feather - Unique Functionality STD TC ID: 
-780 + 781 
-  
-  
-Additional Tests Cycle 6 STD  
-ID: 1569-1570 
-  
-  
-****Shaper tracker is active. *** 
-  
-  
-Why does this bug happen and what triggers it? 
-Basically, the Feather Shape Tracker XML overrides the magnetic thresholds in the registry. As a result, the Magnetic Indication (horseshoe) display aligns with the thresholds defined in the Feather Shape Tracker XML, while the colors in the Metal Values window are based on the thresholds set in the registry. 
-  
-  
-  
-Example MetalSensorData values: 
- <MetalSensorData InfoMetalThresholdMM = "1.50" SubOptimalMetalThresholdMM="2.99" BadMetalThresholdMM="9.99" InfoMetalThresholdDeg = "9.99" SubOptimalMetalThresholdDeg="14.99" BadMetalThresholdDeg="19.99" />
+            # extract numbers separated by +, -, or ,
+            numbers = re.findall(r"\b\d+\b", line)
+            tc_ids.extend(int(n) for n in numbers if n.isdigit())
 
-"""
+            # stop if IDs line ends (optional: can capture multiple lines if needed)
+            if numbers:
+                break
+
+    return tc_ids
+
 
 if __name__ == "__main__":
-    groups = extract_std_groups_from_additional_info(test_text)
+    additional_info_text = """
+        Some other info
+    Additional Tests Cycle 1:
+    STD-Alpha
+    ID: 42 + 63 + 74
+    More text here
+    Additional Tests Cycle 2
+    Beta STD
+    12-34-56
+    
+        Additional Tests Cycle 6 STD:
+        #25 + #47 + #84
+        
+            Some other info
+    Additional Tests Cycle 1:
+    STD-Alpha
+    ID: 42 + 63 + 74
+    More text here
+    Additional Tests Cycle 2
+    Beta STD
+    12-34-56
+    """
 
-    print(groups)
-    expected = ['780', '781']
+    std_name = "Additional Tests Cycle 6 STD"
 
-    for tc_id_list in groups.values():
+    from pprint import pprint
 
-        if tc_id_list == expected:
-            print(True)
-        else:
-            print(False)
+    tc_ids = extract_tc_ids_from_additional_info(std_name, additional_info_text)
+    print(f"Test case IDs for '{std_name}':")
+    pprint(tc_ids)
