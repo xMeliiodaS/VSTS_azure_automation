@@ -3,16 +3,38 @@ from collections import defaultdict
 from openpyxl import load_workbook
 from collections import defaultdict
 
+
+def normalize_columns_pandas(df):
+    """Normalize column names: lowercase + replace spaces with underscores."""
+    df.columns = [col.strip().lower().replace(" ", "_") for col in df.columns]
+    return df
+
+
+def get_column_pandas(df, key, required=True):
+    """
+    Return the first column name in df.columns that matches expected variants.
+    If required=False, returns None instead of raising error when missing.
+    """
+    variants = COLUMN_MAP[key]
+    for variant in variants:
+        for col in df.columns:
+            if variant in col:
+                return col
+    if required:
+        raise ValueError(f"Missing required column for key '{key}': variants {variants}")
+    return None
+
+
 def get_bug_to_tests_map(excel_path):
     """
     Map bug IDs to test case IDs from an STD Excel.
     Handles multiple bug IDs in one cell.
     """
     df = pd.read_excel(excel_path)
-    df = normalize_columns(df)
+    df = normalize_columns_pandas(df)
 
-    bug_col = get_column(df, "bug")
-    id_col = get_column(df, "id") if "id" in df.columns else None
+    bug_col = get_column_pandas(df, "bug")
+    id_col = get_column_pandas(df, "id") if "id" in df.columns else None
     if id_col is None:
         raise ValueError("No ID column found. Make sure your file has an ID column.")
 
@@ -31,6 +53,7 @@ def get_bug_to_tests_map(excel_path):
 
     return dict(bug_to_tests)
 
+
 from openpyxl import load_workbook
 from collections import defaultdict
 
@@ -42,9 +65,11 @@ COLUMN_MAP = {
     "id": ["id", "test_id"]
 }
 
+
 def normalize_columns(cols):
     """Normalize column names: lowercase + replace spaces with underscores."""
     return [col.strip().lower().replace(" ", "_") for col in cols]
+
 
 def get_column(headers, key):
     """Return first header that matches any variant of key."""
@@ -54,6 +79,7 @@ def get_column(headers, key):
             if variant in h:
                 return h
     raise ValueError(f"Missing required column for key '{key}'")
+
 
 def is_precondition_row(row, headers):
     """Check if row is a precondition row."""
@@ -72,6 +98,7 @@ def is_precondition_row(row, headers):
             return False
 
     return True
+
 
 def validate_and_summarize(file_path):
     """Validate STD rules using openpyxl."""
@@ -141,6 +168,12 @@ def validate_and_summarize(file_path):
 
     return rules
 
+
 if __name__ == "__main__":
-    file_path = "Book1 - copy.xlsx"
+    file_path = "Book1.xlsx"
+
+    bug_map = get_bug_to_tests_map(file_path)
+    print(bug_map)
+
+
     violations = validate_and_summarize(file_path)
