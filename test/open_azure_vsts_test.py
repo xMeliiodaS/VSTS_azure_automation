@@ -5,13 +5,13 @@ import unittest
 
 from infra.config_provider import ConfigProvider
 from infra.browser_wrapper import BrowserWrapper
-from infra.working_with_exel import get_bug_to_tests_map
+from infra.working_with_exel import get_bug_to_tests_map, validate_and_summarize
 
 from logic.work_item import WorkItem
 from logic.base_page_app import BasePageApp
 from logic.work_items_search import WorkItemsSearch
 
-from utils.html_reporter import export_html_report
+from utils.html_reporter import export_html_report, export_std_validation_html
 from utils.std_id_validator import validate_std_id, build_result_record
 from utils.additional_info_extract_std_tc_id import extract_tc_ids_from_additional_info
 
@@ -24,10 +24,15 @@ class OpenAzureVSTSTest(unittest.TestCase):
         """
         ssl._create_default_https_context = ssl._create_unverified_context
 
-        self.browser = BrowserWrapper()
+        # self.browser = BrowserWrapper()
         self.config = ConfigProvider.load_config_json()
-        self.driver = self.browser.get_driver(self.config["url"])
-        self.bug_map_dict = get_bug_to_tests_map(self.config["excel_path"])
+        # self.driver = self.browser.get_driver(self.config["url"])
+
+        std_excel_path = self.config["excel_path"]
+        self.bug_map_dict = get_bug_to_tests_map(std_excel_path)
+
+        violations = validate_and_summarize(std_excel_path)
+        export_std_validation_html(violations, report_title="STD Excel Validation Summary")
 
     def tearDown(self):
         """
