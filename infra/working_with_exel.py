@@ -60,11 +60,7 @@ def normalize_columns(df):
 
 
 def get_column(df, key):
-    """
-    Return the first column name in df.columns that contains
-    any of the expected variants for the given key.
-    Raises an error if none found.
-    """
+    """Return the first column name in df.columns that matches expected variants."""
     variants = COLUMN_MAP[key]
     for variant in variants:
         for col in df.columns:
@@ -104,15 +100,12 @@ def get_bug_to_tests_map(excel_path):
 
 def is_precondition_row(row, df):
     """
-    Check if a given row qualifies as a "precondition row."
-    A precondition row must have values in all mandatory columns (id, headline, description, etc.)
-    and must have no data in any of the other columns.
+    Check if a given row qualifies as a 'precondition row.'
+    Must have values in all mandatory columns (id, headline, description, etc.)
+    and no data in any other columns.
     """
-    # List possible variants for precondition columns
     possible_must_have = ['id', 'headline', 'test_description', 'test_desc', 'description', 'test_details']
     must_have = [col for col in possible_must_have if col in df.columns]
-
-    # All other columns except must_have
     other_cols = [col for col in df.columns if col not in must_have]
 
     for col in must_have:
@@ -131,38 +124,36 @@ def is_precondition_row(row, df):
 def validate_and_summarize(df):
     """
     Validate the test case DataFrame against predefined rules and summarize violations.
-    Applies multiple rules (missing results, missing expected values, bugs vs pass/fail mismatches, etc.),
-    prints a summary of findings, and returns the violations grouped by rule.
+    Applies multiple rules (missing results, missing expected values, bugs vs pass/fail mismatches, etc.).
     """
     expected_col = get_column(df, "expected")
     results_col = get_column(df, "results")
     bug_col = get_column(df, "bug")
-    comment_col = get_column(df, "comment")
+    comment_col = get_column(df, "comment")  # kept for parity
 
-    df[results_col] = df[results_col].astype(str).str.strip()
-    df[comment_col] = df[comment_col].astype(str).str.strip()
-    df[expected_col] = df[expected_col].astype(str).str.strip()
-    df.loc[df[expected_col] == '', expected_col] = pd.NA
+    # Normalize columns: keep true NAs, strip whitespace, convert empty strings -> NA
+    for col in [expected_col, results_col, comment_col]:
+        df[col] = df[col].astype("string").str.strip().replace("", pd.NA)
 
-    rule2_mask = df[results_col].ne("") & df[expected_col].isna()
-    print(f"Rule2 candidates before filter: {rule2_mask.sum()}")
-
+    # Precondition detection
     precondition_mask = df.apply(lambda row: is_precondition_row(row, df), axis=1)
-    print(f"Precondition rows detected: {precondition_mask.sum()}")
 
-    rule2_mask &= ~precondition_mask
-    print(f"Rule2 candidates after filter: {rule2_mask.sum()}")
+    # Convenience masks
+    res_lower = df[results_col].str.lower()
+    pass_mask = (res_lower == "pass")
+    fail_mask = (res_lower == "fail")
+
+    # Rules — exactly as per spec
+    rule1_mask = df[expected_col].notna() & df[results_col].isna()
+    rule2_mask = df[results_col].notna() & df[expected_col].isna() & (~precondition_mask)
+    rule3_mask = df[bug_col].notna() & pass_mask
+    rule4_mask = df[bug_col].isna() & fail_mask
 
     rules = {
-        "Rule1": df[df[results_col].eq("") & df[expected_col].notna()],
+        "Rule1": df[rule1_mask],
         "Rule2": df[rule2_mask],
-        "Rule3": df[df[bug_col].notna() & df[results_col].str.lower().eq("pass")],
-        "Rule4": df[df[bug_col].isna() & df[results_col].str.lower().eq("fail")],
-        "Rule5": df[
-            df[expected_col].notna() &
-            ~df[results_col].str.lower().eq("pass") &
-            df[comment_col].eq("")
-            ]
+        "Rule3": df[rule3_mask],
+        "Rule4": df[rule4_mask],
     }
 
     for rule_name, v_df in rules.items():
@@ -171,14 +162,15 @@ def validate_and_summarize(df):
         else:
             cols_to_show = [c for c in ('id', 'headline', 'test_id', 'title') if c in v_df.columns]
             print(f"{rule_name}: FAIL — {len(v_df)} violation(s) found:")
-            print(v_df[cols_to_show].head(10).to_string(index=False))
+            if cols_to_show:
+                print(v_df[cols_to_show].head(10).to_string(index=False))
         print("-" * 40)
 
     return rules
 
 
 if __name__ == "__main__":
-    excel_path = "Book1.xlsx"
+    excel_path = "Book1 - Copy.xlsx"
 
     # Bug to test mapping using your existing function
     bug_map = get_bug_to_tests_map(excel_path)
@@ -190,3 +182,6 @@ if __name__ == "__main__":
 
     # Validate baseline and print summary
     violations = validate_and_summarize(df)
+
+    print('--------------------------------')
+    print(violations)
