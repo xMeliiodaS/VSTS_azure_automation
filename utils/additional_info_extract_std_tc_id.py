@@ -33,34 +33,34 @@ def extract_tc_ids_from_additional_info(std_name: str, additional_info_text: str
     return tc_ids
 
 
-if __name__ == "__main__":
-    additional_info_text = """
-        Some other info
-    Additional Tests Cycle 1:
-    STD-Alpha
-    ID: 42 + 63 + 74
-    More text here
-    Additional Tests Cycle 2
-    Beta STD
-    12-34-56
-    
-        Additional Tests Cycle 6 STD:
-        #25 + #47 + #84
-        
-            Some other info
-    Additional Tests Cycle 1:
-    STD-Alpha
-    ID: 42 + 63 + 74
-    More text here
-    Additional Tests Cycle 2
-    Beta STD
-    12-34-56
-    """
-
-    std_name = "Additional Tests Cycle 6 STD"
-
-    from pprint import pprint
-
-    tc_ids = extract_tc_ids_from_additional_info(std_name, additional_info_text)
-    print(f"Test case IDs for '{std_name}':")
-    pprint(tc_ids)
+# if __name__ == "__main__":
+#     additional_info_text = """
+#         Some other info
+#     Additional Tests Cycle 1:
+#     STD-Alpha
+#     ID: 42 + 63 + 74
+#     More text here
+#     Additional Tests Cycle 2
+#     Beta STD
+#     12-34-56
+#
+#     Additional Tests Cycle 6 STD
+#     #25 + #47 + #84
+#
+#     Some other info
+#     Additional Tests Cycle 1:
+#     STD-Alpha
+#     ID: 42 + 63 + 74
+#     More text here
+#     Additional Tests Cycle 2
+#     Beta STD
+#     12-34-56
+#     """
+#
+#     std_name = "Additional Tests Cycle 6 STD"
+#
+#     from pprint import pprint
+#
+#     tc_ids = extract_tc_ids_from_additional_info(std_name, additional_info_text)
+#     print(f"Test case IDs for {std_name}':")
+#     pprint(tc_ids)
