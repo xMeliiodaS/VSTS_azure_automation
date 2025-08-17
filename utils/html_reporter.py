@@ -1,122 +1,94 @@
-# logic/html_reporter.py
-
 import pandas as pd
 import os
 
+def export_combined_html(violations, results, report_title="STD Validation + Automation Results", filename="std_combined_results.html"):
+    """
+    Export a combined HTML report with:
+      1. STD Excel Validation summary & details (violations)
+      2. Automation Results (results)
+    """
 
-def export_combined_html(results, rules_dict,
-                         report_title="📝 Automation Dashboard",
-                         filename='std_full_report.html'):
-
-    TABLE_STYLE = '''
+    TABLE_STYLE = """
         <style>
           body {
             font-family: 'Segoe UI', Arial, sans-serif;
             background: #262a34;
             color: #f1f1fa;
+            padding: 20px;
+          }
+          h1, h2 {
+            color: #61dafb;
           }
           table {
+            width: 100%;
             border-collapse: collapse;
-            width: 80%;
-            margin: 24px auto;
-            background: #32364a;
-            box-shadow: 0 2px 16px #22263a44;
-            border-radius: 10px;
-            overflow: hidden;
+            margin-bottom: 20px;
           }
           th, td {
-            padding: 12px 15px;
-            border: 1px solid #424758;
+            border: 1px solid #444;
+            padding: 8px;
             text-align: left;
           }
           th {
-            background: linear-gradient(90deg, #4e59c2 0%, #9755e4 100%);
-            color: #fff;
-            font-weight: 600;
-            letter-spacing: .02em;
-            border: none;
-          }
-          tr {
-            background: #32364a;
+            background-color: #333;
           }
           tr:nth-child(even) {
-            background: #373d52;
+            background-color: #2e323d;
           }
-          tr:hover {
-            background: #44476b;
-            transition: background 0.12s;
-          }
-          td:last-child {
-            font-style: italic;
-            color: #bab8ea;
-          }
-          .pass {
-            color: #3ff7b6;
+          .success {
+            color: #4caf50;
             font-weight: bold;
           }
           .fail {
-            color: #ff6584;
+            color: #ff5252;
             font-weight: bold;
           }
         </style>
-    '''
+    """
 
-    RULE_NAMES = {
-        "Rule1": "Expected Result is not empty AND Test Results Empty",
-        "Rule2": "Test Results is not empty AND Expected Result is Empty",
-        "Rule3": "Bug not empty AND Test Results = Pass",
-        "Rule4": "Bug Empty AND Results = Fail"
-    }
+    html_parts = [f"<html><head>{TABLE_STYLE}</head><body>"]
+    html_parts.append(f"<h1>{report_title}</h1>")
 
-    html_parts = [
-        "<meta charset='UTF-8'>",
-        f"<h1 style='text-align:center;'>{report_title}</h1>",
-        TABLE_STYLE
-    ]
+    # --- Violations Section ---
+    html_parts.append("<h2>STD Excel Validation Summary</h2>")
 
-    # ----------------------
-    # Section 1: STD ID CHECK RESULTS
-    # ----------------------
-    df = pd.DataFrame(results)
+    if not violations:
+        html_parts.append("<p class='success'>No violations found ✅</p>")
+    else:
+        # violations is a LIST of dicts (rule_name, count, df)
+        for v in violations:
+            rule_name = v["rule"]
+            count = v["count"]
+            df = v["df"]
 
-    def row_style(row):
-        if "✅" in row.Status:
-            return ['color: #3ff7b6; font-weight: bold;'] * len(row)
-        if "❌" in row.Status:
-            return ['color: #ff6584; font-weight: bold;'] * len(row)
-        return [''] * len(row)
+            html_parts.append(f"<h3>{rule_name} ({count} violation(s))</h3>")
+            if count == 0 or df.empty:
+                html_parts.append("<p>No violations found ✅</p>")
+            else:
+                html_parts.append(df.to_html(index=False, escape=False))
 
-    styled = df.style.apply(row_style, axis=1)
+    # --- Automation Results Section ---
+    html_parts.append("<h2>Automation Results</h2>")
 
-    html_parts.append("<h2 style='text-align:center;'>STD ID Check Results</h2>")
-    html_parts.append(styled.hide(axis='index').to_html())
-
-    # ----------------------
-    # Section 2: STD VALIDATION SUMMARY
-    # ----------------------
-    html_parts.append("<h2 style='text-align:center;'>Validation Summary</h2>")
-
-    for rule_key, rows in rules_dict.items():
-        rule_name = RULE_NAMES.get(rule_key, rule_key)
-        html_parts.append(f"<h3 style='text-align:center;'>{rule_name} ({len(rows)} violation(s))</h3>")
-
-        columns = ["id", "headline"]
-
-        if rows:
-            data_for_df = [{col: r.get(col, "") for col in columns} for r in rows]
-            df = pd.DataFrame(data_for_df)
+    if not results:
+        html_parts.append("<p>No automation results available.</p>")
+    else:
+        df_results = pd.DataFrame(results)
+        if not df_results.empty:
+            html_parts.append(df_results.to_html(index=False, escape=False))
         else:
-            df = pd.DataFrame([{col: "—" for col in columns}])
+            html_parts.append("<p>No automation results found.</p>")
 
-        html_parts.append(df.to_html(index=False, escape=False))
+    # close HTML
+    html_parts.append("</body></html>")
 
-    # ----------------------
-    # Write combined HTML
-    # ----------------------
-    html_content = "\n".join(html_parts)
+    report_html = "\n".join(html_parts)
 
-    with open(filename, 'w', encoding='utf-8') as f:
-        f.write(html_content)
-        os.startfile(filename)
+    # save to file
+    output_dir = "reports"
+    os.makedirs(output_dir, exist_ok=True)
+    path = os.path.join(output_dir, filename)
+    with open(path, "w", encoding="utf-8") as f:
+        f.write(report_html)
 
-    print(f"✅ Combined HTML dashboard generated: {filename}")
+    print(f"[INFO] Combined report generated at: {path}")
