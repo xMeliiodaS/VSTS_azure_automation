@@ -22,8 +22,8 @@ def validate_std_id(vsts_field_val, expected_test_ids):
     # If the set of IDs doesn't match (any out of place or wrong/extra), fail
     elif set(field_std_ids) != set(expected_test_ids):
         return False, (
-            f"Test Case IDs don't match! Found: {field_std_ids}, "
-            f"Expected: {expected_test_ids}")
+            f"Test Case IDs don't match! Found: {field_std_ids} "
+            f"instead of: {expected_test_ids}")
     # If the number of IDs is wrong (e.g., duplicates or missing), fail
     elif len(field_std_ids) != len(expected_test_ids):
         return False, (
@@ -48,8 +48,8 @@ def build_result_record(bug_id, test_ids, field_val, status_str, comment):
     """
     return {
         "Bug ID": bug_id,
-        "Linked Test IDs": ", ".join([str(tid) for tid in test_ids]),
-        "STD_ID in Azure": field_val,
+        "STD ID in DOORS": ", ".join([str(tid) for tid in test_ids]),
+        "STD ID in VSTS": field_val,
         "Status": status_str,
         "Comments": comment
     }
