@@ -21,7 +21,7 @@ class WorkItemsSearch(BasePage):
 
     def fill_bug_id_input_and_press_enter(self, bug_id):
         """
-        Clear Search bar and fills the Bug ID on the Search Bar.
+        Clear Search bar and fills the Bug ID on the Search Bar and then hit Enter.
         """
         search_bar = WebDriverWait(self._driver, 20).until(
             EC.element_to_be_clickable((By.CSS_SELECTOR, self.SEARCH_BAR_INPUT)))

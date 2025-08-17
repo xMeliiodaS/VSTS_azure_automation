@@ -5,10 +5,8 @@ from selenium import common as c
 from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
 
-
 # Disable SSL verification via environment variable
 os.environ['WDM_SSL_VERIFY'] = '0'
-
 
 
 class BrowserWrapper:

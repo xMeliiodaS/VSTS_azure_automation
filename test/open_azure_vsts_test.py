@@ -1,5 +1,3 @@
-# File: test/open_azure_vsts_test.py
-
 import ssl
 import unittest
 
@@ -24,9 +22,9 @@ class OpenAzureVSTSTest(unittest.TestCase):
         """
         ssl._create_default_https_context = ssl._create_unverified_context
 
-        # self.browser = BrowserWrapper()
+        self.browser = BrowserWrapper()
         self.config = ConfigProvider.load_config_json()
-        # self.driver = self.browser.get_driver(self.config["url"])
+        self.driver = self.browser.get_driver(self.config["url"])
 
         std_excel_path = self.config["excel_path"]
         self.bug_map_dict = get_bug_to_tests_map(std_excel_path)

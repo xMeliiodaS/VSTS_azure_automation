@@ -32,7 +32,6 @@ def extract_tc_ids_from_additional_info(std_name: str, additional_info_text: str
 
     return tc_ids
 
-
 # if __name__ == "__main__":
 #     additional_info_text = """
 #         Some other info

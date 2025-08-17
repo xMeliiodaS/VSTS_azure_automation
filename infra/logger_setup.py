@@ -12,8 +12,6 @@ class LoggerSetup:
         datefmt='%d-%m-%Y - %H:%M:%S',  # Exclude milliseconds
         force=True
     )
-    # Suppress logging from 'undetected_chromedriver' to avoid clutter
-    logging.getLogger('undetected_chromedriver').setLevel(logging.WARNING)
 
 
 # Create an instance of LoggingSetup to configure logging when this module is imported

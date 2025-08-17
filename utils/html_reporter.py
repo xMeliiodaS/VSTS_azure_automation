@@ -3,6 +3,7 @@
 import pandas as pd
 import os
 
+
 def export_html_report(results, report_title="📝 Automation Results for STD_ID Validation",
                        filename='std_id_check_results.html'):
     TABLE_STYLE = '''
@@ -82,7 +83,8 @@ def export_html_report(results, report_title="📝 Automation Results for STD_ID
     print(f"✅ Fancy HTML report generated: {filename}")
 
 
-def export_std_validation_html(rules_dict, report_title="STD Validation Summary", filename='std_validation_report.html'):
+def export_std_validation_html(rules_dict, report_title="STD Validation Summary",
+                               filename='std_validation_report.html'):
     import pandas as pd
     import os
 
