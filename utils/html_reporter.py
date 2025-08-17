@@ -122,7 +122,7 @@ def export_combined_html(violations, results, report_title="STD Validation + Aut
             rule_name = bucket["rule_name"]
             rows = bucket["rows"] or []
             df = rows_to_df(rows)
-            html_parts.append(f"<h3>{rule_name} ({0 if df.empty else len(df)} row(s))</h3>")
+            html_parts.append(f"<h3>{rule_name}")
             html_parts.append(df.to_html(index=False, escape=False))
 
     # Section 2: Automation Results
