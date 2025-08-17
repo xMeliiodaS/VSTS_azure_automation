@@ -3,6 +3,7 @@ from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
 from infra.base_page import BasePage
+from utils.utils import safe_click
 
 
 class WorkItem(BasePage):
@@ -36,8 +37,7 @@ class WorkItem(BasePage):
         """
         Click on the Additional Info Tab inside the work item.
         """
-        WebDriverWait(self._driver, 20).until(
-            EC.element_to_be_clickable((By.CSS_SELECTOR, self.ADDITIONAL_INFO_BUTTON))).click()
+        safe_click(self._driver, self.ADDITIONAL_INFO_BUTTON)
 
     def get_additional_info_value(self):
         field = WebDriverWait(self._driver, 20).until(

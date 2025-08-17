@@ -1,7 +1,11 @@
+import time
+
 from selenium.webdriver import Keys
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+
+from utils.utils import safe_click
 
 from infra.base_page import BasePage
 
@@ -21,5 +25,5 @@ class BasePageApp(BasePage):
         """
         Exit the opened window of the current bug.
         """
-        WebDriverWait(self._driver, 20).until(
-            EC.element_to_be_clickable((By.CSS_SELECTOR, self.CLOSE_CURRENT_BUG_BUTTON))).click()
+        time.sleep(0.15)
+        safe_click(self._driver, self.CLOSE_CURRENT_BUG_BUTTON)
