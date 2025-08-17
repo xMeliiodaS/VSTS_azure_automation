@@ -9,7 +9,7 @@ from logic.work_item import WorkItem
 from logic.base_page_app import BasePageApp
 from logic.work_items_search import WorkItemsSearch
 
-from utils.html_reporter import export_html_report, export_std_validation_html
+from utils.html_reporter import export_combined_html
 from utils.std_id_validator import validate_std_id, build_result_record
 from utils.additional_info_extract_std_tc_id import extract_tc_ids_from_additional_info
 
@@ -29,8 +29,7 @@ class OpenAzureVSTSTest(unittest.TestCase):
         std_excel_path = self.config["excel_path"]
         self.bug_map_dict = get_bug_to_tests_map(std_excel_path)
 
-        violations = validate_and_summarize(std_excel_path)
-        export_std_validation_html(violations, report_title="STD Excel Validation Summary")
+        self.violations = validate_and_summarize(std_excel_path)
 
     def tearDown(self):
         """
@@ -54,7 +53,8 @@ class OpenAzureVSTSTest(unittest.TestCase):
             base_page_app.close_current_bug_button()
 
         if results:
-            export_html_report(results)
+            # now call the new exporter once, combining both violations + results
+            export_combined_html(self.violations, results, report_title="STD Validation + Automation Results")
 
     def process_single_bug(self, bug_id, test_ids, work_item, work_items_search, results):
         """
