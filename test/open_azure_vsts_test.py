@@ -25,12 +25,12 @@ class OpenAzureVSTSTest(unittest.TestCase):
         self.browser = BrowserWrapper()
         self.config = ConfigProvider.load_config_json()
 
-        path = "https://bwiiltiadotfs.eu.jnj.com/tfs/BiosenseCollection/Carto3/_workitems"
-        # self.driver = self.browser.get_driver(self.config["url"])
-        self.driver = self.browser.get_driver(path)
+        # path = "https://bwiiltiadotfs.eu.jnj.com/tfs/BiosenseCollection/Carto3/_workitems"
+        self.driver = self.browser.get_driver(self.config["url"])
+        # self.driver = self.browser.get_driver(path)
 
-        # std_excel_path = self.config["excel_path"]
-        std_excel_path = "C:\\Users\\BAbozala\\OneDrive - JNJ\\Desktop\\Projects\\VSTS_azure_automation\\infra\\Book1.xlsx"
+        std_excel_path = self.config["excel_path"]
+        # std_excel_path = "C:\\Users\\BAbozala\\OneDrive - JNJ\\Desktop\\Projects\\VSTS_azure_automation\\infra\\Book1.xlsx"
 
         self.bug_map_dict = get_bug_to_tests_map(std_excel_path)
 
@@ -88,8 +88,8 @@ class OpenAzureVSTSTest(unittest.TestCase):
         Handles searching and validating "Additional Info" Tab.
         """
         # Get the STD name
-        # std_name = self.config["std_name"]
-        std_name = "Feather - Unique Functionality STD"
+        std_name = self.config["std_name"]
+        # std_name = "Feather - Unique Functionality STD"
 
         self.work_item.click_on_additional_info_tab()
         additional_info_text = self.work_item.get_additional_info_value()
