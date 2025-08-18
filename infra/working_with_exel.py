@@ -169,10 +169,10 @@ def validate_and_summarize(file_path):
     return rules
 
 
-if __name__ == "__main__":
-    file_path = "Book1.xlsx"
-
-    bug_map = get_bug_to_tests_map(file_path)
-    print(bug_map)
-
-    violations = validate_and_summarize(file_path)
+# if __name__ == "__main__":
+#     file_path = "Book1.xlsx"
+#
+#     bug_map = get_bug_to_tests_map(file_path)
+#     print(bug_map)
+#
+#     violations = validate_and_summarize(file_path)
