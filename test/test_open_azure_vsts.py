@@ -80,6 +80,7 @@ class TestOpenAzureVSTS(unittest.TestCase):
 
         if not ok:
             if self.handle_additional_info_std_id():
+                std_id_field_val = ", ".join(self.expected_test_ids)
                 status_str = "✅"
 
         print(f"\n🔍 Checked Bug {bug_id}, linked to Test IDs: {test_ids} in Excel")
