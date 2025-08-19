@@ -24,7 +24,8 @@ def extract_tc_ids_from_additional_info(std_name: str, additional_info_text: str
 
             # extract numbers separated by +, -, or ,
             numbers = re.findall(r"\b\d+\b", line)
-            tc_ids.extend(int(n) for n in numbers if n.isdigit())
+            # tc_ids.extend(int(n) for n in numbers if n.isdigit())
+            tc_ids.extend(n for n in numbers if n.isdigit())
 
             # stop if IDs line ends (optional: can capture multiple lines if needed)
             if numbers:
