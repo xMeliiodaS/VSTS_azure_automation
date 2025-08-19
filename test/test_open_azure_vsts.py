@@ -2,6 +2,8 @@ import os
 import ssl
 import unittest
 
+from pycparser.c_ast import Return
+
 from infra.config_provider import ConfigProvider
 from infra.browser_wrapper import BrowserWrapper
 from infra.working_with_exel import get_bug_to_tests_map, validate_and_summarize
@@ -89,17 +91,16 @@ class TestOpenAzureVSTS(unittest.TestCase):
         Handles searching and validating "Additional Info" Tab.
         """
         # Get the STD name
-        std_name = self.config["std_name"]
-        # std_name = "Feather - Unique Functionality STD"
+        # std_name = self.config["std_name"]
+        std_name = "Feather - Unique Functionality STD"
 
         self.work_item.click_on_additional_info_tab()
         additional_info_text = self.work_item.get_additional_info_value()
         tc_id_list = extract_tc_ids_from_additional_info(std_name, additional_info_text)
 
-        for tc_id in tc_id_list:
-            if tc_id == self.expected_test_ids:
-                return True  # Found a matching group
-        # No match found in any group
+        if sorted(tc_id_list) == sorted(self.expected_test_ids):
+            return True
+
         return False
 
 
