@@ -113,7 +113,6 @@ if __name__ == "__main__":
     config_path = os.path.join(appdata_folder, 'config.json')
 
     config = ConfigProvider.load_config_json(config_path)
-    print(f"Loaded config: {config}")
 
     suite = unittest.TestSuite()
     suite.addTest(TestOpenAzureVSTS('test_unique_bugs_std_id'))

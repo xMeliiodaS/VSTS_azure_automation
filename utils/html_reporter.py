@@ -1,7 +1,9 @@
 import os
 import pandas as pd
 
-def export_combined_html(violations, results, report_title="STD Validation + Automation Results", filename="std_combined_results.html"):
+
+def export_combined_html(violations, results, report_title="STD Validation + Automation Results",
+                         filename="std_combined_results.html"):
     """
     Combined HTML report:
       • Section 1: STD Excel Validation Summary (per-rule tables)
@@ -79,11 +81,11 @@ def export_combined_html(violations, results, report_title="STD Validation + Aut
         return normalized
 
     # Preferable keys for each semantic column
-    ID_KEYS        = ["id", "test_id"]
-    HEADLINE_KEYS  = ["headline", "title", "summary", "test_name", "test_description", "description"]
-    EXPECTED_KEYS  = ["expected", "expected_result", "expected_results"]
-    RESULTS_KEYS   = ["results", "test_results", "test_result"]
-    BUG_KEYS       = ["bug", "bug_no", "defect_no", "bugs_no", "bug_number"]
+    ID_KEYS = ["id", "test_id"]
+    HEADLINE_KEYS = ["headline", "title", "summary", "test_name", "test_description", "description"]
+    EXPECTED_KEYS = ["expected", "expected_result", "expected_results"]
+    RESULTS_KEYS = ["results", "test_results", "test_result"]
+    BUG_KEYS = ["bug", "bug_no", "defect_no", "bugs_no", "bug_number"]
 
     def first_nonempty(row, keys):
         for k in keys:
@@ -96,11 +98,11 @@ def export_combined_html(violations, results, report_title="STD Validation + Aut
         data = []
         for r in rows:
             data.append({
-                "Test ID":         first_nonempty(r, ID_KEYS),
-                "Headline":        first_nonempty(r, HEADLINE_KEYS),
+                "Test ID": first_nonempty(r, ID_KEYS),
+                "Headline": first_nonempty(r, HEADLINE_KEYS),
                 "Expected Result": first_nonempty(r, EXPECTED_KEYS),
-                "Actual Result":   first_nonempty(r, RESULTS_KEYS),
-                "Bug":             first_nonempty(r, BUG_KEYS),
+                "Actual Result": first_nonempty(r, RESULTS_KEYS),
+                "Bug": first_nonempty(r, BUG_KEYS),
             })
         if not data:
             data = [{"Test ID": "—", "Headline": "—", "Expected Result": "—", "Actual Result": "—", "Bug": "—"}]

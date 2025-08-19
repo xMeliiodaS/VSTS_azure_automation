@@ -27,19 +27,19 @@ class WorkItemsSearch(BasePage):
         search_bar = WebDriverWait(self._driver, 20).until(
             EC.element_to_be_clickable((By.CSS_SELECTOR, self.SEARCH_BAR_INPUT)))
 
-        time.sleep(0.15)
+        time.sleep(0.1)
         safe_click(self._driver, self.SEARCH_BAR_INPUT)
 
-        time.sleep(0.15)
+        time.sleep(0.1)
         search_bar.send_keys(Keys.CONTROL + "a")
 
-        time.sleep(0.15)
+        time.sleep(0.1)
         search_bar.send_keys(Keys.DELETE)
 
-        time.sleep(0.15)
+        time.sleep(0.1)
         search_bar.send_keys(bug_id)
 
-        time.sleep(0.15)
+        time.sleep(0.1)
         search_bar.send_keys(Keys.ENTER)
 
         time.sleep(0.1)
