@@ -1,22 +1,30 @@
-# AT Baseline Verifier (Python Module)
+# AT Baseline Verifier – Python Backend
 
-Automation engine for validating and reporting baseline test data.  
-This module powers the backend logic of the AT Baseline Verifier project, handling data parsing, validation, and reporting.
-
----
-
-## 🚀 Features
-- Parse and validate baseline test results.  
-- Generate detailed HTML reports with a modern look.  
-- Config-driven — easy to adapt for different environments.  
-- Lightweight and modular code structure.
+This is the backend automation engine for the **AT Baseline Verifier** project.  
+It processes baseline test data, validates it, and generates reports consumed by the WPF (C#) frontend.
 
 ---
 
-## 📦 Installation
-Clone the repo and install dependencies:
+## 🎯 Purpose
+- Validate baseline test cases against defined standards.  
+- Process large datasets quickly and consistently.  
+- Export results as structured logs and HTML reports.  
+- Provide reliable data for the WPF UI to visualize.  
+
+---
+
+## ⚙️ How It Works
+1. The WPF app sends user input or config to the Python engine.  
+2. Python scripts process the input (CSV, Excel, or database queries).  
+3. Validation results are generated as:  
+   - Structured log files (`automation_log.txt`)  
+   - Rich HTML reports  
+4. WPF consumes these outputs and displays them in the Solo Leveling–inspired UI.  
+
+---
+
+## ▶️ Running the Python Module
+From the project root:
 
 ```bash
-git clone https://github.com/<your-username>/<repo-name>.git
-cd <repo-name>
-pip install -r requirements.txt
+python main.py --input data/test_cases.csv --output results/report.html
