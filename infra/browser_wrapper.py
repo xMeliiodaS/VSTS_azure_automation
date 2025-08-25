@@ -1,4 +1,5 @@
 import os
+import chromedriver_autoinstaller
 
 from selenium import webdriver
 from selenium import common as c
@@ -38,12 +39,13 @@ class BrowserWrapper:
             options.add_argument("--disable-infobars")
             options.add_argument("--disable-blink-features=AutomationControlled")
 
-            service = Service(ChromeDriverManager().install())
-            self._driver = webdriver.Chrome(service=service, options=options)
+            # Install once, reuse every time
+            driver_path = chromedriver_autoinstaller.install()
+            service = Service(driver_path)
 
+            self._driver = webdriver.Chrome(service=service, options=options)
             self._driver.get(url)
             self._driver.maximize_window()
-
             return self._driver
 
         except c.WebDriverException as e:
