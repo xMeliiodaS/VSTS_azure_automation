@@ -45,11 +45,14 @@ def get_bug_to_tests_map(excel_path):
         raw_bug_val = str(row[bug_col])
         test_id = row[id_col]
 
-        bug_ids = [bug.strip() for bug in raw_bug_val.split(",") if bug.strip()]
+        bug_ids = [bug.strip() for bug in str(raw_bug_val).split(",") if bug.strip()]
 
-        for bug_id in bug_ids:
-            if bug_id.isdigit():
-                bug_to_tests[bug_id].append(test_id)
+        for bug_id_str in bug_ids:
+            # Ensure we normalize float-y values like '1234.0' → '1234'
+            if bug_id_str.replace(".", "", 1).isdigit():
+                if bug_id_str.endswith(".0"):
+                    bug_id_str = bug_id_str[:-2]
+            bug_to_tests[bug_id_str].append(test_id)
 
     return dict(bug_to_tests)
 
