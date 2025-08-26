@@ -18,12 +18,6 @@ def safe_click(driver, css_selector: str, retries: int = 3, wait_time: int = 5) 
             element = WebDriverWait(driver, wait_time).until(
                 EC.element_to_be_clickable((By.CSS_SELECTOR, css_selector))
             )
-            try:
-                driver.execute_script(
-                    "arguments[0].scrollIntoView({block:'center', behavior:'instant'});", element
-                )
-            except Exception:
-                pass
             element.click()
             return True
         except (TimeoutException, NoSuchElementException, InvalidSessionIdException, WebDriverException) as e:
