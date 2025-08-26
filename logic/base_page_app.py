@@ -26,4 +26,4 @@ class BasePageApp(BasePage):
         Exit the opened window of the current bug.
         """
         time.sleep(0.15)
-        safe_click(self._driver, self.CLOSE_CURRENT_BUG_BUTTON)
+        safe_click(self._driver, self.CLOSE_CURRENT_BUG_BUTTON, retries=3, wait_time=10)

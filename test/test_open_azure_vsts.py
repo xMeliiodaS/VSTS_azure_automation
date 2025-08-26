@@ -39,6 +39,10 @@ class TestOpenAzureVSTS(unittest.TestCase):
 
         self.violations = validate_and_summarize(std_excel_path)
 
+    def tearDown(self):
+        self.browser.close_browser()
+
+
     def test_unique_bugs_std_id(self):
         """
         Validate each bug by checking its STD_ID field, close UI, then output HTML report.
@@ -47,23 +51,30 @@ class TestOpenAzureVSTS(unittest.TestCase):
         work_items_search = WorkItemsSearch(self.driver)
         self.work_item = WorkItem(self.driver)
 
-        for bug_id, test_ids in self.bug_map_dict.items():
-            self.process_single_bug(bug_id, test_ids, self.work_item, work_items_search, results)
+        try:
+            for bug_id, test_ids in self.bug_map_dict.items():
+                self.process_single_bug(bug_id, test_ids, self.work_item, work_items_search, results)
 
-            # Close current bug view
-            base_page_app = BasePageApp(self.driver)
-            base_page_app.close_current_bug_button()
+                # Close current bug view
+                base_page_app = BasePageApp(self.driver)
+                base_page_app.close_current_bug_button()
 
-        if results:
-            # now call the new exporter once, combining both violations + results
-            export_combined_html(self.violations, results, report_title="STD Validation + Automation Results")
-
-        self.browser.close_browser()
+        except Exception as e:
+            # Defensive screenshot on unexpected failure, keep context for debugging
+            raise AssertionError(f"Test aborted due to unexpected error.")
+        finally:
+            if results:
+                export_combined_html(self.violations, results, report_title="STD Validation + Automation Results")
 
     def process_single_bug(self, bug_id, test_ids, work_item, work_items_search, results):
         """
         Handles searching and validating in the workflow.
         """
+
+        # Search for the bug ID in Azure VSTS
+        if not bug_id:
+            return
+
         # Search for the bug ID in Azure VSTS
         work_items_search.fill_bug_id_input_and_press_enter(bug_id)
 
@@ -99,10 +110,7 @@ class TestOpenAzureVSTS(unittest.TestCase):
         additional_info_text = self.work_item.get_additional_info_value()
         tc_id_list = extract_tc_ids_from_additional_info(std_name, additional_info_text)
 
-        if sorted(tc_id_list) == sorted(self.expected_test_ids):
-            return True
-
-        return False
+        return sorted(tc_id_list) == sorted(self.expected_test_ids)
 
 
 if __name__ == "__main__":

@@ -52,7 +52,9 @@ class BrowserWrapper:
             raise RuntimeError("Failed to obtain a working WebDriver after multiple attempts")
 
     def close_browser(self):
-        """
-        Close the browser and quit the WebDriver.
-        """
-        self._driver.quit()
+        """Close the browser and quit the WebDriver."""
+        if self._driver:
+            try:
+                self._driver.quit()
+            finally:
+                self._driver = None

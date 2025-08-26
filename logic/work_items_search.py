@@ -20,26 +20,19 @@ class WorkItemsSearch(BasePage):
         """
         super().__init__(driver)
 
-    def fill_bug_id_input_and_press_enter(self, bug_id):
+    def fill_bug_id_input_and_press_enter(self, bug_id: str):
         """
-        Clear Search bar and fills the Bug ID on the Search Bar and then hit Enter.
+        Clear Search bar and fill the Bug ID then hit Enter.
         """
-        search_bar = WebDriverWait(self._driver, 20).until(
-            EC.element_to_be_clickable((By.CSS_SELECTOR, self.SEARCH_BAR_INPUT)))
+        # ensure visible/clickable
+        input_el = self.wait_clickable(By.CSS_SELECTOR, self.SEARCH_BAR_INPUT, timeout=30)
 
-        time.sleep(0.1)
-        safe_click(self._driver, self.SEARCH_BAR_INPUT)
+        safe_click(self._driver, self.SEARCH_BAR_INPUT, retries=3, wait_time=10)
 
-        time.sleep(0.1)
-        search_bar.send_keys(Keys.CONTROL + "a")
+        input_el.send_keys(Keys.CONTROL, "a")
+        input_el.send_keys(Keys.DELETE)
+        input_el.send_keys(str(bug_id))
+        input_el.send_keys(Keys.ENTER)
 
-        time.sleep(0.1)
-        search_bar.send_keys(Keys.DELETE)
-
-        time.sleep(0.1)
-        search_bar.send_keys(bug_id)
-
-        time.sleep(0.1)
-        search_bar.send_keys(Keys.ENTER)
-
-        time.sleep(0.1)
+        # optional: wait for results to load (generic heuristic)
+        self.wait_present(By.CSS_SELECTOR, self.SEARCH_BAR_INPUT, timeout=10)

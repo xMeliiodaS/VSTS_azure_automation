@@ -2,8 +2,8 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
-from infra.base_page import BasePage
 from utils.utils import safe_click
+from infra.base_page import BasePage
 
 
 class WorkItem(BasePage):
