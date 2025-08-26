@@ -25,7 +25,7 @@ class WorkItemsSearch(BasePage):
         Clear Search bar and fill the Bug ID then hit Enter.
         """
         # ensure visible/clickable
-        input_el = self.wait_clickable(By.CSS_SELECTOR, self.SEARCH_BAR_INPUT, timeout=30)
+        input_el = self.wait_clickable(By.CSS_SELECTOR, self.SEARCH_BAR_INPUT, timeout=10)
 
         safe_click(self._driver, self.SEARCH_BAR_INPUT, retries=3, wait_time=10)
 

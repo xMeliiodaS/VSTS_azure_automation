@@ -1,22 +1,47 @@
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+
+
 class BasePage:
     """
     Base class for all page objects. Contains common methods and attributes.
     """
 
-    # Always get driver
-    def __init__(self, driver):
+    def __init__(self, driver, default_timeout: int = 20):
         """
         Initialize the BasePage with a WebDriver instance.
 
         :param driver: The WebDriver instance to use for browser interactions.
         """
         self._driver = driver
+        self._timeout = default_timeout
 
+    # ---------- Core ----------
     def refresh_page(self):
-        """
-        Refresh the current page.
-        """
         self._driver.refresh()
+
+    def get_current_url(self):
+        return self._driver.current_url
+
+    def navigate_back(self):
+        self._driver.back()
+
+    # ---------- Wait helpers ----------
+    def wait_visible(self, by: By, value: str, timeout: int | None = None):
+        return WebDriverWait(self._driver, timeout or self._timeout).until(
+            EC.visibility_of_element_located((by, value))
+        )
+
+    def wait_clickable(self, by: By, value: str, timeout: int | None = None):
+        return WebDriverWait(self._driver, timeout or self._timeout).until(
+            EC.element_to_be_clickable((by, value))
+        )
+
+    def wait_present(self, by: By, value: str, timeout: int | None = None):
+        return WebDriverWait(self._driver, timeout or self._timeout).until(
+            EC.presence_of_element_located((by, value))
+        )
 
     def scroll_to_element(self, element):
         """
@@ -31,12 +56,3 @@ class BasePage:
                 behavior: 'smooth'
             });
         """, element)
-
-    def get_current_url(self):
-        return self._driver.current_url
-
-    def navigate_back(self):
-        """
-        Navigate back in the browser history (Browser's back arrow).
-        """
-        self._driver.back()
