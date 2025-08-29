@@ -115,16 +115,14 @@ class TestOpenAzureVSTS(unittest.TestCase):
 
 
 if __name__ == "__main__":
-    for i in range(5):
-        appdata_folder = os.path.join(
-            os.environ.get('APPDATA', os.path.expanduser('~\\AppData\\Roaming')),
-            'AT_baseline_verifier'
-        )
-        config_path = os.path.join(appdata_folder, 'config.json')
+    appdata_folder = os.path.join(
+        os.environ.get('APPDATA', os.path.expanduser('~\\AppData\\Roaming')),
+        'AT_baseline_verifier'
+    )
+    config_path = os.path.join(appdata_folder, 'config.json')
 
-        config = ConfigProvider.load_config_json(config_path)
+    config = ConfigProvider.load_config_json(config_path)
 
-        suite = unittest.TestSuite()
-        suite.addTest(TestOpenAzureVSTS('test_unique_bugs_std_id'))
-        unittest.TextTestRunner(verbosity=2).run(suite)
-        print("Arcane ", i)
+    suite = unittest.TestSuite()
+    suite.addTest(TestOpenAzureVSTS('test_unique_bugs_std_id'))
+    unittest.TextTestRunner(verbosity=2).run(suite)
