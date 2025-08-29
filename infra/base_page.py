@@ -1,6 +1,7 @@
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.common.exceptions import TimeoutException
 
 
 class BasePage:
@@ -56,3 +57,17 @@ class BasePage:
                 behavior: 'smooth'
             });
         """, element)
+
+    def navigate_with_retry(self, url: str, retries: int = 3):
+        """Navigate to a URL and retry if the page fails to load completely."""
+        for attempt in range(1, retries + 1):
+            try:
+                self._driver.get(url)
+                WebDriverWait(self._driver, self._timeout).until(
+                    lambda d: d.execute_script("return document.readyState") == "complete"
+                )
+                return
+            except TimeoutException:
+                print(f"[BasePage] Attempt {attempt} failed, refreshing page...")
+                self._driver.refresh()
+        raise TimeoutException(f"Failed to load {url} after {retries} attempts")

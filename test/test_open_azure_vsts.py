@@ -4,6 +4,7 @@ import unittest
 
 from pycparser.c_ast import Return
 
+from infra.base_page import BasePage
 from infra.config_provider import ConfigProvider
 from infra.browser_wrapper import BrowserWrapper
 from infra.working_with_exel import get_bug_to_tests_map, validate_and_summarize
@@ -28,16 +29,16 @@ class TestOpenAzureVSTS(unittest.TestCase):
         self.browser = BrowserWrapper()
         self.config = ConfigProvider.load_config_json()
 
-        # path = "https://bwiiltiadotfs.eu.jnj.com/tfs/BiosenseCollection/Carto3/_workitems"
         self.driver = self.browser.get_driver(self.config["url"])
-        # self.driver = self.browser.get_driver(path)
 
         std_excel_path = self.config["excel_path"]
-        # std_excel_path = "C:\\Users\\BAbozala\\OneDrive - JNJ\\Desktop\\Projects\\VSTS_azure_automation\\infra\\Book1.xlsx"
 
         self.bug_map_dict = get_bug_to_tests_map(std_excel_path)
 
         self.violations = validate_and_summarize(std_excel_path)
+
+        base_page = BasePage(self.driver)
+        base_page.navigate_with_retry(self.config["url"])
 
     def tearDown(self):
         self.browser.close_browser()

@@ -12,6 +12,7 @@ from utils.utils import safe_click
 class WorkItemsSearch(BasePage):
     # -----------------Locators Related to Bugs-----------------
     SEARCH_BAR_INPUT = '#l1-search-input'
+    SEARCH_ICON_BUTTON = '.search-icon.cursor-pointer'
 
     def __init__(self, driver):
         """
@@ -48,6 +49,7 @@ class WorkItemsSearch(BasePage):
         )
 
         # now hit Enter
+        safe_click(self._driver, self.SEARCH_ICON_BUTTON, retries=3, wait_time=10)
         input_el.send_keys(Keys.ENTER)
 
         # optional: wait until results reload (heuristic – can tweak locator)
