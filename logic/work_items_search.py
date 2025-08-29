@@ -23,16 +23,32 @@ class WorkItemsSearch(BasePage):
     def fill_bug_id_input_and_press_enter(self, bug_id: str):
         """
         Clear Search bar and fill the Bug ID then hit Enter.
+        Reliable even on slow machines by verifying each step.
         """
         # ensure visible/clickable
         input_el = self.wait_clickable(By.CSS_SELECTOR, self.SEARCH_BAR_INPUT, timeout=10)
 
         safe_click(self._driver, self.SEARCH_BAR_INPUT, retries=3, wait_time=10)
 
+        # clear field robustly
         input_el.send_keys(Keys.CONTROL, "a")
         input_el.send_keys(Keys.DELETE)
+
+        # wait until the field is empty
+        WebDriverWait(self._driver, 10).until(
+            lambda d: input_el.get_attribute("value") == ""
+        )
+
+        # type the bug id
         input_el.send_keys(str(bug_id))
+
+        # wait until the field contains exactly the bug id
+        WebDriverWait(self._driver, 10).until(
+            lambda d: input_el.get_attribute("value") == str(bug_id)
+        )
+
+        # now hit Enter
         input_el.send_keys(Keys.ENTER)
 
-        # optional: wait for results to load (generic heuristic)
+        # optional: wait until results reload (heuristic – can tweak locator)
         self.wait_present(By.CSS_SELECTOR, self.SEARCH_BAR_INPUT, timeout=10)
