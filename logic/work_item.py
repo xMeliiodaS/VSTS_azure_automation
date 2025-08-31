@@ -20,7 +20,7 @@ class WorkItem(BasePage):
         super().__init__(driver)
 
     def get_std_id_value(self):
-        field = self.wait_visible(By.CSS_SELECTOR, self.STD_ID_FIELD, timeout=15)
+        field = self.wait_visible(By.CSS_SELECTOR, self.STD_ID_FIELD, timeout=30)
         return field.get_attribute("value")
 
     def check_std_id_is_empty(self):
