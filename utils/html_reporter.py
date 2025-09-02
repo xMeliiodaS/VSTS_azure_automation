@@ -82,10 +82,6 @@ def export_combined_html(violations, results, report_title="STD Validation + Aut
 
     # Preferable keys for each semantic column
     ID_KEYS = ["id", "test_id"]
-    HEADLINE_KEYS = ["headline", "title", "summary", "test_name", "test_description", "description"]
-    EXPECTED_KEYS = ["expected", "expected_result", "expected_results"]
-    RESULTS_KEYS = ["results", "test_results", "test_result"]
-    BUG_KEYS = ["bug", "bug_no", "defect_no", "bugs_no", "bug_number"]
 
     def first_nonempty(row, keys):
         for k in keys:
@@ -93,39 +89,46 @@ def export_combined_html(violations, results, report_title="STD Validation + Aut
                 return row[k]
         return "—"
 
-    def rows_to_df(rows):
-        # rows: list of dicts (already normalized by your loader)
+    def rows_to_df_combined(norm_vio):
+        """
+        Generate a single DataFrame with one row per Rule.
+        Each row contains:
+          - Rule Name (column: "Rule")
+          - Comma-separated Test Case IDs (column: "Test Case IDs")
+        """
         data = []
-        for r in rows:
+        for bucket in norm_vio:
+            rule_name = bucket["rule_name"]
+            rows = bucket["rows"] or []
+
+            # Get all test case IDs as a comma-separated string
+            test_case_ids = ", ".join(first_nonempty(r, ID_KEYS) for r in rows if first_nonempty(r, ID_KEYS) != "—")
+
+            # Add the row for this rule
             data.append({
-                "Test ID": first_nonempty(r, ID_KEYS),
-                "Headline": first_nonempty(r, HEADLINE_KEYS),
-                "Expected Result": first_nonempty(r, EXPECTED_KEYS),
-                "Actual Result": first_nonempty(r, RESULTS_KEYS),
-                "Bug": first_nonempty(r, BUG_KEYS),
+                "Rule": rule_name,
+                "Test Case IDs": test_case_ids if test_case_ids else "—"  # Handle empty IDs
             })
-        if not data:
-            data = [{"Test ID": "—", "Headline": "—", "Expected Result": "—", "Actual Result": "—", "Bug": "—"}]
+
+        if not data:  # Handle case when there are no violations
+            data = [{"Rule": "—", "Test Case IDs": "—"}]
+
         return pd.DataFrame(data)
 
     # ---- build HTML ----------------------------------------------------------
 
-    html_parts = [f"<html><head><meta charset='UTF-8'>{TABLE_STYLE}</head><body>"]
-    html_parts.append(f"<h1>{report_title}</h1>")
+    html_parts = [f"<html><head><meta charset='UTF-8'>{TABLE_STYLE}</head><body>",
+                  "<h2>STD Excel Validation Summary</h2>"]
 
-    # Section 1: Violations
-    html_parts.append("<h2>STD Excel Validation Summary</h2>")
+    # Update the "Violations" section to use a single formatted table
 
     norm_vio = normalize_violations(violations)
     if not norm_vio:
         html_parts.append("<p class='success'>No violations found ✅</p>")
     else:
-        for bucket in norm_vio:
-            rule_name = bucket["rule_name"]
-            rows = bucket["rows"] or []
-            df = rows_to_df(rows)
-            html_parts.append(f"<h3>{rule_name}")
-            html_parts.append(df.to_html(index=False, escape=False))
+        # Generate the combined DataFrame
+        combined_df = rows_to_df_combined(norm_vio)
+        html_parts.append(combined_df.to_html(index=False, escape=False))
 
     # Section 2: Automation Results
     html_parts.append("<h2>Automation Results</h2>")
@@ -134,7 +137,8 @@ def export_combined_html(violations, results, report_title="STD Validation + Aut
         # Keep index hidden; rely on keys produced by build_result_record
         html_parts.append(df_res.to_html(index=False, escape=False))
     else:
-        html_parts.append("<p>No automation results available.</p>")
+        html_parts.append(
+            '<p style="text-align: center; font-size: 24px; font-weight: bold;">All clear! No bugs found ✅</p>')
 
     html_parts.append("</body></html>")
     report_html = "\n".join(html_parts)

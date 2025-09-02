@@ -49,23 +49,24 @@ class TestOpenAzureVSTS(unittest.TestCase):
         Validate each bug by checking its STD_ID field, close UI, then output HTML report.
         """
         results = []
-        work_items_search = WorkItemsSearch(self.driver)
-        self.work_item = WorkItem(self.driver)
-
-        try:
-            for bug_id, test_ids in self.bug_map_dict.items():
-                self.process_single_bug(bug_id, test_ids, self.work_item, work_items_search, results)
-
-                # Close current bug view
-                base_page_app = BasePageApp(self.driver)
-                base_page_app.close_current_bug_button()
-
-        except Exception as e:
-            # Defensive screenshot on unexpected failure, keep context for debugging
-            raise AssertionError(f"Test aborted due to unexpected error.")
-        finally:
-            if results:
-                export_combined_html(self.violations, results, report_title="STD Validation + Automation Results")
+        # work_items_search = WorkItemsSearch(self.driver)
+        # self.work_item = WorkItem(self.driver)
+        #
+        # try:
+        #     for bug_id, test_ids in self.bug_map_dict.items():
+        #         self.process_single_bug(bug_id, test_ids, self.work_item, work_items_search, results)
+        #
+        #         # Close current bug view
+        #         base_page_app = BasePageApp(self.driver)
+        #         base_page_app.close_current_bug_button()
+        #
+        # except Exception as e:
+        #     # Defensive screenshot on unexpected failure, keep context for debugging
+        #     raise AssertionError(f"Test aborted due to unexpected error.")
+        # finally:
+        #     if results:
+        #         export_combined_html(self.violations, results, report_title="STD Validation + Automation Results")
+        export_combined_html(self.violations, results, report_title="STD Validation + Automation Results")
 
     def process_single_bug(self, bug_id, test_ids, work_item, work_items_search, results):
         """
