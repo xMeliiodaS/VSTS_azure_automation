@@ -21,17 +21,30 @@ def export_combined_html(violations, results, report_title="STD Validation + Aut
         "Rule4": "Bug Empty AND Results = Fail"
     }
 
-    TABLE_STYLE = """
+    TABLE_STYLE_VALIDATION = """
         <style>
           body { font-family: 'Segoe UI', Arial, sans-serif; background: #262a34; color: #f1f1fa; padding: 20px; }
-          h1,h2,h3 { text-align: center; }
+          h1, h2 { text-align: center; }
+          table { border-collapse: collapse; width: 45%; margin: 16px auto; background: #424242; border-radius: 8px; }
+          th, td { padding: 12px; border: 1px solid #5c5c5c; text-align: left; }
+          th { background: #6155a6; color: #fff; text-align: center;}
+          tr:nth-child(even) { background: #313131; }
+          tr:hover { background: #444444; transition: background .15s; }
+          .success { color: #50fa7b; font-weight: bold; text-align: center; }
+        </style>
+    """
+
+    TABLE_STYLE_BUGS = """
+        <style>
+          body { font-family: 'Segoe UI', Arial, sans-serif; background: #262a34; color: #f1f1fa; padding: 20px; }
+          h1, h2 { text-align: center; }
           table { border-collapse: collapse; width: 90%; margin: 16px auto; background: #32364a; border-radius: 10px; }
           th, td { padding: 10px 12px; border: 1px solid #424758; text-align: left; }
-          th { background: linear-gradient(90deg, #4e59c2 0%, #9755e4 100%); color: #fff; font-weight: 600; }
+          th { background: linear-gradient(90deg, #4e59c2 0%, #9755e4 100%); color: #fff; font-weight: bold;
+           text-align: center;}
           tr:nth-child(even) { background: #373d52; }
           tr:hover { background: #44476b; transition: background .12s; }
           .success { color: #3ff7b6; font-weight: 600; text-align: center; }
-          .fail { color: #ff6584; font-weight: 600; text-align: center; }
         </style>
     """
 
@@ -102,12 +115,13 @@ def export_combined_html(violations, results, report_title="STD Validation + Aut
             rows = bucket["rows"] or []
 
             # Get all test case IDs as a comma-separated string
-            test_case_ids = ", ".join(first_nonempty(r, ID_KEYS) for r in rows if first_nonempty(r, ID_KEYS) != "—")
+            test_case_ids = ", ".join(
+                str(first_nonempty(r, ID_KEYS)) for r in rows if str(first_nonempty(r, ID_KEYS)) != "✅")
 
             # Add the row for this rule
             data.append({
                 "Rule": rule_name,
-                "Test Case IDs": test_case_ids if test_case_ids else "—"  # Handle empty IDs
+                "Test Case IDs": f"{test_case_ids}" if test_case_ids else "✅"  # Handle empty IDs
             })
 
         if not data:  # Handle case when there are no violations
@@ -117,24 +131,24 @@ def export_combined_html(violations, results, report_title="STD Validation + Aut
 
     # ---- build HTML ----------------------------------------------------------
 
-    html_parts = [f"<html><head><meta charset='UTF-8'>{TABLE_STYLE}</head><body>",
+    html_parts = [f"<html><head><meta charset='UTF-8'>{TABLE_STYLE_VALIDATION}</head><body>",
                   "<h2>STD Excel Validation Summary</h2>"]
 
-    # Update the "Violations" section to use a single formatted table
-
+    # Section 1: STD Excel Validation Summary (Custom Style for this table)
     norm_vio = normalize_violations(violations)
     if not norm_vio:
         html_parts.append("<p class='success'>No violations found ✅</p>")
     else:
-        # Generate the combined DataFrame
         combined_df = rows_to_df_combined(norm_vio)
         html_parts.append(combined_df.to_html(index=False, escape=False))
+
+    # Change style head for Section 2
+    html_parts.append(f"<style>{TABLE_STYLE_BUGS}</style>")
 
     # Section 2: Automation Results
     html_parts.append("<h2>Automation Results</h2>")
     if results:
         df_res = pd.DataFrame(results)
-        # Keep index hidden; rely on keys produced by build_result_record
         html_parts.append(df_res.to_html(index=False, escape=False))
     else:
         html_parts.append(
