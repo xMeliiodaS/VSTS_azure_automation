@@ -12,6 +12,9 @@ class WorkItem(BasePage):
     ADDITIONAL_INFO_BUTTON = 'li.work-item-form-tab[aria-label="Additional Information"]'
     ADDITIONAL_INFO_FILED = 'div[aria-label="AdditionalInfo:"]'
 
+    ITERATION_PATH_FIELD = 'input.treepicker-item-title-input[readonly][aria-label="Iteration Path"]'
+    LAST_REPRODUCED_IN_FIELD = 'input[aria-label="LastRepreducedIn"]'
+
     def __init__(self, driver):
         """
         Initializes the BoardPage with the provided WebDriver instance.
