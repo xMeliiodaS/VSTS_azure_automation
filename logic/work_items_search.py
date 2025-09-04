@@ -49,4 +49,5 @@ class WorkItemsSearch(BasePage):
         )
 
         # now hit Enter
+        time.sleep(0.1)
         safe_click(self._driver, self.SEARCH_ICON_BUTTON, retries=3, wait_time=10)

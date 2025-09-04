@@ -1,5 +1,6 @@
 import os
 import ssl
+import time
 import unittest
 
 from pycparser.c_ast import Return
@@ -39,6 +40,9 @@ class TestOpenAzureVSTS(unittest.TestCase):
 
         base_page = BasePage(self.driver)
         base_page.navigate_with_retry(self.config["url"])
+
+        # Let the page load for some seconds to avoid potential issues
+        time.sleep(3)
 
     def tearDown(self):
         self.browser.close_browser()
