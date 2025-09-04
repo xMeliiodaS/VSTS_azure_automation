@@ -25,3 +25,16 @@ def safe_click(driver, css_selector: str, retries: int = 3, wait_time: int = 5) 
             if attempt == retries:
                 return False
     return False
+
+
+def wait_until_element_present(driver, by, selector, timeout=10, poll_frequency=0.2):
+    start = time.time()
+    while True:
+        try:
+            if driver.find_element(by, selector):
+                return True
+        except Exception:
+            pass
+        if time.time() - start > timeout:
+            return False
+        time.sleep(poll_frequency)

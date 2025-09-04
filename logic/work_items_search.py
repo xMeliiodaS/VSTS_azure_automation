@@ -50,6 +50,3 @@ class WorkItemsSearch(BasePage):
 
         # now hit Enter
         safe_click(self._driver, self.SEARCH_ICON_BUTTON, retries=3, wait_time=10)
-
-        # optional: wait until results reload (heuristic – can tweak locator)
-        self.wait_present(By.CSS_SELECTOR, self.SEARCH_BAR_INPUT, timeout=10)
