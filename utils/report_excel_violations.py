@@ -12,12 +12,12 @@ TABLE_STYLE_VALIDATION = """
 <style>
   body { font-family: 'Segoe UI', Arial, sans-serif; background: #262a34; color: #f1f1fa; padding: 20px; }
   h1, h2 { text-align: center; }
-  table { border-collapse: collapse; width: 45%; margin: 16px auto; background: #424242; border-radius: 8px; }
-  th, td { padding: 12px; border: 1px solid #5c5c5c; text-align: left; }
-  th { background: #6155a6; color: #fff; text-align: center;}
-  tr:nth-child(even) { background: #313131; }
-  tr:hover { background: #444444; transition: background .15s; }
-  .success { color: #50fa7b; font-weight: bold; text-align: center; }
+  table { border-collapse: collapse; width: 45%; margin: 16px auto; background: #32364a; border-radius: 8px; }
+  th, td { padding: 12px; border: 1px solid #424758; text-align: left; }
+  th { background: linear-gradient(90deg, #4e59c2 0%, #9755e4 100%); color: #fff; font-weight: bold; text-align: center;}
+  tr:nth-child(even) { background: #373d52; }
+  tr:hover { background: #44476b; transition: background .15s; }
+  .success { color: #3ff7b6; font-weight: 600; text-align: center; }
 </style>
 """
 
