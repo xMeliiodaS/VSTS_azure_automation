@@ -27,4 +27,4 @@ It processes baseline test data, validates it, and generates reports consumed by
 From the project root:
 
 ```bash
-python main.py --input data/test_cases.csv --output results/report.html
+   python main.py --input data/test_cases.csv --output results/report.html
