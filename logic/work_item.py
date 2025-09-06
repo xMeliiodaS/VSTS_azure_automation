@@ -29,6 +29,20 @@ class WorkItem(BasePage):
         field = self.wait_visible(By.CSS_SELECTOR, self.STD_ID_FIELD, timeout=30)
         return field.get_attribute("value")
 
+    def get_last_reproduce_in_value(self):
+        """
+        Wait for the Last_Reproduced_In input field to be visible and return its current value attribute.
+        """
+        field = self.wait_visible(By.CSS_SELECTOR, self.LAST_REPRODUCED_IN_FIELD, timeout=30)
+        return field.get_attribute("value")
+
+    def get_iteration_path_value(self):
+        """
+        Wait for the Iteration_Path input field to be visible and return its current value attribute.
+        """
+        field = self.wait_visible(By.CSS_SELECTOR, self.ITERATION_PATH_FIELD, timeout=30)
+        return field.get_attribute("value")
+
     def check_std_id_is_empty(self):
         """
         Checks whether the STD ID input field is empty, unset, or set to the string "None" (case-insensitive).

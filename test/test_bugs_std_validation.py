@@ -24,6 +24,9 @@ class TestBugSTDValidation(unittest.TestCase):
         self.driver = self.browser.get_driver(self.config["url"])
         self.bug_map_dict = get_bug_to_tests_map(self.config["excel_path"])
 
+        self.last_reproduced_in_config = self.config["current_version"]
+        self.iteration_path_config = self.config["iteration_path"]
+
         # Keep violations loaded for reporting consistency
         self.violations = validate_and_summarize(self.config["excel_path"])
         time.sleep(3)
@@ -57,6 +60,7 @@ class TestBugSTDValidation(unittest.TestCase):
         """
         if not bug_id:
             return
+
         work_items_search.fill_bug_id_input_and_press_enter(bug_id)
         std_id_field_val = work_item.get_std_id_value()
 
@@ -64,12 +68,15 @@ class TestBugSTDValidation(unittest.TestCase):
         ok, comment = validate_std_id(std_id_field_val, expected_test_ids)
         status_str = "✅" if ok else "❌"
 
+        last_reproduced_status, iteration_path_status = self.check_fields(work_item)
+
         if not ok and self.handle_additional_info_std_id(work_item, expected_test_ids):
             std_id_field_val = ", ".join(expected_test_ids)
             status_str = "✅"
 
         print(f"\n🔍 Checked Bug {bug_id}, linked to Test IDs: {test_ids} in Excel")
-        results.append(build_result_record(bug_id, test_ids, std_id_field_val, status_str, comment))
+        results.append(build_result_record(bug_id, test_ids, std_id_field_val, status_str, comment,
+                                           last_reproduced_status, iteration_path_status))
 
     @staticmethod
     def handle_additional_info_std_id(work_item, expected_test_ids):
@@ -80,6 +87,18 @@ class TestBugSTDValidation(unittest.TestCase):
         additional_info_text = work_item.get_additional_info_value()
         tc_id_list = extract_tc_ids_from_additional_info("Feather - Unique Functionality STD", additional_info_text)
         return sorted(tc_id_list) == sorted(expected_test_ids)
+
+    def check_fields(self, work_item):
+        """
+        Compare the Last_reproduced_in and Iteration_path fields to the config.json file
+        """
+        last_reproduced_in_text = work_item.get_last_reproduce_in_value()
+        iteration_path_text = work_item.get_iteration_path_value()
+
+        last_reproduced_status = "✅" if last_reproduced_in_text == self.last_reproduced_in_config else "❌"
+        iteration_path_status = "✅" if iteration_path_text == self.iteration_path_config else "❌"
+
+        return last_reproduced_status, iteration_path_status
 
 
 if __name__ == "__main__":

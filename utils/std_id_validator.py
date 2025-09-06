@@ -34,7 +34,8 @@ def validate_std_id(vsts_field_val, expected_test_ids):
         return True, "STD_ID matches Test Case IDs from Excel."
 
 
-def build_result_record(bug_id, test_ids, field_val, status_str, comment):
+def build_result_record(
+    bug_id, test_ids, field_val, status_str, comment, last_reproduced_in_status, iteration_path_status):
     """
     Builds a dictionary representing a single validation result for reporting.
     - bug_id: The Azure Bug ID
@@ -51,5 +52,7 @@ def build_result_record(bug_id, test_ids, field_val, status_str, comment):
         "STD ID in DOORS": ", ".join([str(tid) for tid in test_ids]),
         "STD ID in VSTS": field_val,
         "Status": status_str,
-        "Comments": comment
+        "Comments": comment,
+        "Last Reproduced In Status": last_reproduced_in_status or "❌",
+        "Iteration Path Status": iteration_path_status or "❌"
     }
