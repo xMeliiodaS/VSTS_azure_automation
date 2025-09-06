@@ -9,8 +9,8 @@ from logic.base_page_app import BasePageApp
 from logic.work_items_search import WorkItemsSearch
 
 from utils.std_id_validator import validate_std_id, build_result_record
-from utils.additional_info_extract_std_tc_id import extract_tc_ids_from_additional_info
 from utils.report_automation_results import export_automation_results_html
+from utils.additional_info_extract_std_tc_id import extract_tc_ids_from_additional_info
 
 
 class TestBugSTDValidation(unittest.TestCase):
