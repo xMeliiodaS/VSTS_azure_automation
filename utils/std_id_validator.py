@@ -18,24 +18,22 @@ def validate_std_id(vsts_field_val, expected_test_ids):
 
     # If nothing in the STD_ID field, that's a fail
     if not field_std_ids:
-        return False, "STD_ID is empty."
+        return False, "STD ID is empty."
+
     # If the set of IDs doesn't match (any out of place or wrong/extra), fail
     elif set(field_std_ids) != set(expected_test_ids):
-        return False, (
-            f"Test Case IDs don't match! Found: {field_std_ids} "
-            f"instead of: {expected_test_ids}")
+        return False, "TC IDs don't match expected TC IDs."
+
     # If the number of IDs is wrong (e.g., duplicates or missing), fail
     elif len(field_std_ids) != len(expected_test_ids):
-        return False, (
-            f"Number of Test Case IDs doesn't match! "
-            f"Found: {len(field_std_ids)}, Expected: {len(expected_test_ids)}")
+        return False, "Number of IDs doesn't match expected!"
     else:
         # Perfect match!
-        return True, "STD_ID matches Test Case IDs from Excel."
+        return True, "Match."
 
 
 def build_result_record(
-    bug_id, test_ids, field_val, status_str, comment, last_reproduced_in_status, iteration_path_status):
+        bug_id, test_ids, field_val, status_str, comment, last_reproduced_in_status, iteration_path_status):
     """
     Builds a dictionary representing a single validation result for reporting.
     - bug_id: The Azure Bug ID

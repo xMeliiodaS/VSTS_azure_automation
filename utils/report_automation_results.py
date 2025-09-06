@@ -11,8 +11,14 @@ TABLE_STYLE_BUGS = """
   tr:nth-child(even) { background: #373d52; }
   tr:hover { background: #44476b; transition: background .12s; }
   .success { color: #3ff7b6; font-weight: 600; text-align: center; }
+  
+    /* Center the 4th, 5th, 6th columns (✅/❌ columns) */
+  td:nth-child(4), td:nth-child(5), td:nth-child(6) {
+    text-align: center;
+  }
 </style>
 """
+
 
 def export_automation_results_html(results, filename="automation_results.html"):
     """
@@ -24,7 +30,8 @@ def export_automation_results_html(results, filename="automation_results.html"):
         df = pd.DataFrame(results)
         html_parts.append(df.to_html(index=False, escape=False))
     else:
-        html_parts.append('<p style="text-align:center;font-size:24px;font-weight:bold;">All clear! No bugs found ✅</p>')
+        html_parts.append(
+            '<p style="text-align:center;font-size:24px;font-weight:bold;">All clear! No bugs found ✅</p>')
 
     html_parts.append("</body></html>")
     os.makedirs("reports", exist_ok=True)
