@@ -21,6 +21,16 @@ def export_automation_results_html(results, filename="automation_results.html"):
     html_parts = [f"<html><head><meta charset='UTF-8'>{TABLE_STYLE_BUGS}</head><body><h2>Automation Results</h2>"]
 
     if results:
+        # Explicitly define the column order
+        columns = [
+            "Bug ID",
+            "STD ID in DOORS",
+            "STD ID in VSTS",
+            "Status",
+            "Comments",
+            "Last Reproduced In Status",
+            "Iteration Path Status"
+        ]
         df = pd.DataFrame(results)
         html_parts.append(df.to_html(index=False, escape=False))
     else:
