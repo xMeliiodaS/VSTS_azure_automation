@@ -1,8 +1,9 @@
-import os
-import unittest
+import os, unittest
+
 from infra.config_provider import ConfigProvider
 from infra.working_with_exel import validate_and_summarize
-from utils.report_excel_violations import export_excel_violations_html  # <-- new import
+
+from utils.report_excel_violations import export_excel_violations_html
 
 class TestExcelViolations(unittest.TestCase):
     def setUp(self):

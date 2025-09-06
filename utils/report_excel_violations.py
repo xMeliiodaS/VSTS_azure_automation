@@ -21,8 +21,11 @@ TABLE_STYLE_VALIDATION = """
 </style>
 """
 
+
 def export_excel_violations_html(violations, filename="violations_report.html"):
-    """Generates HTML report for Excel validation only."""
+    """
+    Generates HTML report for Excel validation only.
+    """
 
     def normalize_violations(vio):
         normalized = []
@@ -56,6 +59,7 @@ def export_excel_violations_html(violations, filename="violations_report.html"):
 
     def rows_to_df(norm_vio):
         ID_KEYS = ["id", "test_id"]
+
         def first_nonempty(row, keys):
             for k in keys:
                 if k in row and row[k] not in (None, ""):
@@ -66,12 +70,14 @@ def export_excel_violations_html(violations, filename="violations_report.html"):
         for bucket in norm_vio:
             rule_name = bucket["rule_name"]
             rows = bucket["rows"]
-            test_case_ids = ", ".join(str(first_nonempty(r, ID_KEYS)) for r in rows if first_nonempty(r, ID_KEYS) != "✅")
+            test_case_ids = ", ".join(
+                str(first_nonempty(r, ID_KEYS)) for r in rows if first_nonempty(r, ID_KEYS) != "✅")
             data.append({"Rule": rule_name, "Test Case IDs": test_case_ids or "✅"})
         return pd.DataFrame(data) if data else pd.DataFrame([{"Rule": "—", "Test Case IDs": "—"}])
 
     norm_vio = normalize_violations(violations)
-    html_parts = [f"<html><head><meta charset='UTF-8'>{TABLE_STYLE_VALIDATION}</head><body><h2>STD Excel Validation Summary</h2>"]
+    html_parts = [
+        f"<html><head><meta charset='UTF-8'>{TABLE_STYLE_VALIDATION}</head><body><h2>STD Excel Validation Summary</h2>"]
 
     if not norm_vio:
         html_parts.append("<p class='success'>No violations found ✅</p>")

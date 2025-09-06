@@ -9,11 +9,11 @@ from infra.base_page import BasePage
 class WorkItem(BasePage):
     # -----------------Locators Related to Bugs-----------------
     STD_ID_FIELD = 'input[aria-label="STD ID"]'
-    ADDITIONAL_INFO_BUTTON = 'li.work-item-form-tab[aria-label="Additional Information"]'
     ADDITIONAL_INFO_FILED = 'div[aria-label="AdditionalInfo:"]'
+    ADDITIONAL_INFO_BUTTON = 'li.work-item-form-tab[aria-label="Additional Information"]'
 
-    ITERATION_PATH_FIELD = 'input.treepicker-item-title-input[readonly][aria-label="Iteration Path"]'
     LAST_REPRODUCED_IN_FIELD = 'input[aria-label="LastRepreducedIn"]'
+    ITERATION_PATH_FIELD = 'input.treepicker-item-title-input[readonly][aria-label="Iteration Path"]'
 
     def __init__(self, driver):
         """
@@ -23,6 +23,9 @@ class WorkItem(BasePage):
         super().__init__(driver)
 
     def get_std_id_value(self):
+        """
+        Wait for the STD_ID input field to be visible and return its current value attribute.
+        """
         field = self.wait_visible(By.CSS_SELECTOR, self.STD_ID_FIELD, timeout=30)
         return field.get_attribute("value")
 
@@ -42,6 +45,9 @@ class WorkItem(BasePage):
         safe_click(self._driver, self.ADDITIONAL_INFO_BUTTON)
 
     def get_additional_info_value(self):
+        """
+        Wait for the 'Additional Info' field to be visible and return its text content.
+        """
         field = WebDriverWait(self._driver, 20).until(
             EC.visibility_of_element_located((By.CSS_SELECTOR, self.ADDITIONAL_INFO_FILED)))
         return field.text

@@ -1,17 +1,23 @@
 import os, ssl, time, unittest
+
 from infra.config_provider import ConfigProvider
 from infra.browser_wrapper import BrowserWrapper
 from infra.working_with_exel import get_bug_to_tests_map, validate_and_summarize
+
 from logic.work_item import WorkItem
 from logic.base_page_app import BasePageApp
 from logic.work_items_search import WorkItemsSearch
+
 from utils.std_id_validator import validate_std_id, build_result_record
 from utils.additional_info_extract_std_tc_id import extract_tc_ids_from_additional_info
-from utils.report_automation_results import export_automation_results_html  # <-- new import
+from utils.report_automation_results import export_automation_results_html
 
 
 class TestBugSTDValidation(unittest.TestCase):
     def setUp(self):
+        """
+         Initialize test environment: load config, start browser, fetch bug map and Excel violations.
+        """
         ssl._create_default_https_context = ssl._create_unverified_context
         self.config = ConfigProvider.load_config_json()
         self.browser = BrowserWrapper()
@@ -23,10 +29,15 @@ class TestBugSTDValidation(unittest.TestCase):
         time.sleep(3)
 
     def tearDown(self):
+        """
+         Clean up after test: close the browser.
+        """
         self.browser.close_browser()
 
     def test_unique_bugs_std_id(self):
-        """Validate each bug's STD_ID against expected Test Case IDs and generate HTML report."""
+        """
+         Validate each bug's STD_ID against expected Test Case IDs and generate HTML report.
+         """
         results = []
         work_items_search = WorkItemsSearch(self.driver)
         work_item = WorkItem(self.driver)
@@ -41,6 +52,9 @@ class TestBugSTDValidation(unittest.TestCase):
                 export_automation_results_html(results)
 
     def process_single_bug(self, bug_id, test_ids, work_item, work_items_search, results):
+        """
+         Process a single bug: search it, fetch STD_ID, validate against expected test IDs, and append result.
+        """
         if not bug_id:
             return
         work_items_search.fill_bug_id_input_and_press_enter(bug_id)
@@ -57,7 +71,11 @@ class TestBugSTDValidation(unittest.TestCase):
         print(f"\n🔍 Checked Bug {bug_id}, linked to Test IDs: {test_ids} in Excel")
         results.append(build_result_record(bug_id, test_ids, std_id_field_val, status_str, comment))
 
-    def handle_additional_info_std_id(self, work_item, expected_test_ids):
+    @staticmethod
+    def handle_additional_info_std_id(work_item, expected_test_ids):
+        """
+         Check 'Additional Info' tab for STD_ID fallback; return True if IDs match expected list.
+        """
         work_item.click_on_additional_info_tab()
         additional_info_text = work_item.get_additional_info_value()
         tc_id_list = extract_tc_ids_from_additional_info("Feather - Unique Functionality STD", additional_info_text)

@@ -15,8 +15,9 @@ TABLE_STYLE_BUGS = """
 """
 
 def export_automation_results_html(results, filename="automation_results.html"):
-    """Generates HTML report for automation results only."""
-
+    """
+    Generates HTML report for automation results only.
+    """
     html_parts = [f"<html><head><meta charset='UTF-8'>{TABLE_STYLE_BUGS}</head><body><h2>Automation Results</h2>"]
 
     if results:
@@ -35,4 +36,5 @@ def export_automation_results_html(results, filename="automation_results.html"):
         os.startfile(path)
     except Exception:
         pass
+
     print(f"✅ Automation results report generated: {path}")
