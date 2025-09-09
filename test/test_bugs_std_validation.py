@@ -3,6 +3,7 @@ import os, ssl, time, unittest
 from infra.config_provider import ConfigProvider
 from infra.browser_wrapper import BrowserWrapper
 from infra.working_with_exel import get_bug_to_tests_map, validate_and_summarize
+from infra.base_page import BasePage
 
 from logic.work_item import WorkItem
 from logic.base_page_app import BasePageApp
@@ -27,8 +28,9 @@ class TestBugSTDValidation(unittest.TestCase):
         self.last_reproduced_in_config = self.config["current_version"]
         self.iteration_path_config = self.config["iteration_path"]
 
-        # Keep violations loaded for reporting consistency
-        self.violations = validate_and_summarize(self.config["excel_path"])
+        base_page = BasePage(self.driver)
+        base_page.navigate_with_retry(self.config["url"])
+
         time.sleep(3)
 
     def tearDown(self):
