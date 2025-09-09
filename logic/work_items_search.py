@@ -50,4 +50,8 @@ class WorkItemsSearch(BasePage):
 
         # now hit Enter
         time.sleep(0.1)
+
+        # force focus, no sleep
+        self._driver.execute_script("arguments[0].focus();", input_el)
+
         safe_click(self._driver, self.SEARCH_ICON_BUTTON, retries=3, wait_time=10)
