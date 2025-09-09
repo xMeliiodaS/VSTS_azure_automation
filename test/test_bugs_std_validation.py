@@ -74,7 +74,6 @@ class TestBugSTDValidation(unittest.TestCase):
             std_id_field_val = ", ".join(expected_test_ids)
             status_str = "✅"
 
-        print(f"\n🔍 Checked Bug {bug_id}, linked to Test IDs: {test_ids} in Excel")
         results.append(build_result_record(bug_id, test_ids, std_id_field_val, status_str, comment,
                                            last_reproduced_status, iteration_path_status))
 
