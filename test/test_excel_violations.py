@@ -5,6 +5,7 @@ from infra.working_with_exel import validate_and_summarize
 
 from utils.report_excel_violations import export_excel_violations_html
 
+
 class TestExcelViolations(unittest.TestCase):
     def setUp(self):
         self.config = ConfigProvider.load_config_json()
@@ -18,6 +19,7 @@ class TestExcelViolations(unittest.TestCase):
         export_excel_violations_html(violations)
 
         self.assertIsNotNone(violations, "Excel validation failed: no violations summary returned.")
+
 
 if __name__ == "__main__":
     appdata_folder = os.path.join(

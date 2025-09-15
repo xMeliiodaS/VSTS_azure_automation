@@ -1,9 +1,9 @@
 import os, ssl, time, unittest
 
+from infra.base_page import BasePage
 from infra.config_provider import ConfigProvider
 from infra.browser_wrapper import BrowserWrapper
 from infra.working_with_exel import get_bug_to_tests_map, validate_and_summarize
-from infra.base_page import BasePage
 
 from logic.work_item import WorkItem
 from logic.base_page_app import BasePageApp
