@@ -21,6 +21,8 @@ TABLE_STYLE_VALIDATION = """
 </style>
 """
 
+RULE_COLUMN_NAME = "Rule"
+TC_ID = "Test Case ID"
 
 def export_excel_violations_html(violations, filename="violations_report.html"):
     """
@@ -72,8 +74,8 @@ def export_excel_violations_html(violations, filename="violations_report.html"):
             rows = bucket["rows"]
             test_case_ids = ", ".join(
                 str(first_nonempty(r, ID_KEYS)) for r in rows if first_nonempty(r, ID_KEYS) != "✅")
-            data.append({"Rule": rule_name, "Test Case IDs": test_case_ids or "✅"})
-        return pd.DataFrame(data) if data else pd.DataFrame([{"Rule": "—", "Test Case IDs": "—"}])
+            data.append({RULE_COLUMN_NAME: rule_name, TC_ID: test_case_ids or "✅"})
+        return pd.DataFrame(data) if data else pd.DataFrame([{RULE_COLUMN_NAME: "—", TC_ID: "—"}])
 
     norm_vio = normalize_violations(violations)
     html_parts = [

@@ -47,6 +47,12 @@ class TestBugSTDValidation(unittest.TestCase):
         work_items_search = WorkItemsSearch(self.driver)
         work_item = WorkItem(self.driver)
 
+        # Check if there are no bugs to process
+        if not self.bug_map_dict:
+            print("No bugs found in the bug map. Exporting an empty report.")
+            export_automation_results_html(results)  # Export an empty report
+            return
+
         try:
             for bug_id, test_ids in self.bug_map_dict.items():
                 self.process_single_bug(bug_id, test_ids, work_item, work_items_search, results)
