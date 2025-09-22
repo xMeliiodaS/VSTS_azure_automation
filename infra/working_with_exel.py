@@ -71,7 +71,8 @@ COLUMN_MAP = {
 
 def normalize_columns(cols):
     """Normalize column names: lowercase + replace spaces with underscores."""
-    return [col.strip().lower().replace(" ", "_") for col in cols]
+    return [str(col).strip().lower().replace(" ", "_") if col is not None else "" for col in cols]
+
 
 
 def get_column(headers, key):
