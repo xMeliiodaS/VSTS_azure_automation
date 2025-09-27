@@ -103,7 +103,16 @@ class TestBugSTDValidation(unittest.TestCase):
         iteration_path_text = work_item.get_iteration_path_value()
 
         last_reproduced_status = "✅" if last_reproduced_in_text == self.last_reproduced_in_config else "❌"
+
+        # Base comparison
         iteration_path_status = "✅" if iteration_path_text == self.iteration_path_config else "❌"
+
+        # Legacy fallback: replace last segment with "Legacy"
+        if "/" in self.iteration_path_config:
+            parts = self.iteration_path_config.rsplit("/", 1)
+            iteration_path_config_legacy = parts[0] + "/Legacy"
+            if iteration_path_text == iteration_path_config_legacy:
+                iteration_path_status = "✅"
 
         return last_reproduced_status, iteration_path_status
 
