@@ -64,7 +64,7 @@ class TestBugSTDValidation(unittest.TestCase):
 
     def process_single_bug(self, bug_id, test_ids, work_item, work_items_search, results):
         """
-         Process a single bug: search it, fetch STD_ID, validate against expected test IDs, and append result.
+        Process a single bug: search it, fetch STD_ID, validate against expected test IDs, and append result.
         """
         if not bug_id:
             return
@@ -73,7 +73,19 @@ class TestBugSTDValidation(unittest.TestCase):
         std_id_field_val = work_item.get_std_id_value()
 
         expected_test_ids = [str(tid) for tid in test_ids]
-        ok, comment = validate_std_id(std_id_field_val, expected_test_ids)
+
+        # Initialize comment
+        comment = ""
+
+        # Detect invalid bug numbers (anything that is not a pure number)
+        invalid_ids = [tid for tid in expected_test_ids if not tid.replace(".", "", 1).isdigit()]
+        if invalid_ids:
+            comment += f"Invalid TC bug number(s): {', '.join(invalid_ids)}. "
+
+        # Validate STD_ID normally and append the validation comment
+        ok, std_comment = validate_std_id(std_id_field_val, expected_test_ids)
+        comment += std_comment  # Append
+
         status_str = "✅" if ok else "❌"
 
         last_reproduced_status, iteration_path_status = self.check_fields(work_item)
@@ -82,8 +94,15 @@ class TestBugSTDValidation(unittest.TestCase):
             std_id_field_val = ", ".join(expected_test_ids)
             status_str = "✅"
 
-        results.append(build_result_record(bug_id, test_ids, std_id_field_val, status_str, comment,
-                                           last_reproduced_status, iteration_path_status))
+        results.append(build_result_record(
+            bug_id,
+            test_ids,
+            std_id_field_val,
+            status_str,
+            comment,  # <-- combined comment
+            last_reproduced_status,
+            iteration_path_status
+        ))
 
     @staticmethod
     def handle_additional_info_std_id(work_item, expected_test_ids):

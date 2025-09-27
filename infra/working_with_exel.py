@@ -1,7 +1,6 @@
 import pandas as pd
 from openpyxl import load_workbook
 from collections import defaultdict
-from collections import defaultdict
 
 
 def normalize_columns_pandas(df):
