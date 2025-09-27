@@ -1,6 +1,8 @@
 import os
 import pandas as pd
 
+import shutil
+
 TABLE_STYLE_BUGS = """
 <style>
   body { font-family: 'Segoe UI', Arial, sans-serif; background: #262a34; color: #f1f1fa; padding: 20px; }
@@ -34,10 +36,12 @@ def export_automation_results_html(results, filename="automation_results.html"):
             '<p style="text-align:center;font-size:24px;font-weight:bold;">All clear! No bugs found ✅</p>')
 
     html_parts.append("</body></html>")
+
     os.makedirs("reports", exist_ok=True)
     path = os.path.join("reports", filename)
     with open(path, "w", encoding="utf-8") as f:
         f.write("\n".join(html_parts))
+    save_report_copy(path)
 
     try:
         os.startfile(path)
@@ -45,3 +49,17 @@ def export_automation_results_html(results, filename="automation_results.html"):
         pass
 
     print(f"✅ Automation results report generated: {path}")
+
+
+def save_report_copy(report_path: str):
+    # AppData folder path
+    app_data_folder = os.path.join(
+        os.getenv("APPDATA"),
+        "AT_baseline_verifier"
+    )
+    os.makedirs(app_data_folder, exist_ok=True)
+
+    # Copy the report into AppData
+    report_filename = os.path.basename(report_path)
+    target_path = os.path.join(app_data_folder, report_filename)
+    shutil.copy(report_path, target_path)
