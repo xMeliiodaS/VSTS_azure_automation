@@ -9,8 +9,8 @@ from logic.work_item import WorkItem
 from logic.base_page_app import BasePageApp
 from logic.work_items_search import WorkItemsSearch
 
-from utils.std_id_validator import validate_std_id, build_result_record
 from utils.report_automation_results import export_automation_results_html
+from utils.std_id_validator import validate_std_id, build_result_record
 from utils.additional_info_extract_std_tc_id import extract_tc_ids_from_additional_info
 
 
@@ -55,8 +55,9 @@ class TestBugSTDValidation(unittest.TestCase):
 
         try:
             for bug_id, test_ids in self.bug_map_dict.items():
-                self.process_single_bug(bug_id, test_ids, work_item, work_items_search, results)
-                BasePageApp(self.driver).close_current_bug_button()
+                opened = self.process_single_bug(bug_id, test_ids, work_item, work_items_search, results)
+                if opened:
+                    BasePageApp(self.driver).close_current_bug_button()
         finally:
             if results:
                 # Export automation results HTML (separated)
@@ -65,29 +66,39 @@ class TestBugSTDValidation(unittest.TestCase):
     def process_single_bug(self, bug_id, test_ids, work_item, work_items_search, results):
         """
         Process a single bug: search it, fetch STD_ID, validate against expected test IDs, and append result.
+        Returns True if a bug details view was opened; otherwise False.
         """
         if not bug_id:
-            return
+            return False
 
-        work_items_search.fill_bug_id_input_and_press_enter(bug_id)
-        std_id_field_val = work_item.get_std_id_value()
+        comment = ""
 
         expected_test_ids = [str(tid) for tid in test_ids]
 
-        # Initialize comment
-        comment = ""
+        # Validate the BUG ID (digits only)
+        bug_id_str = str(bug_id).strip()
+        if not bug_id_str.isdigit():
+            comment += f"Invalid bug number: {bug_id_str}. "
+            results.append(build_result_record(
+                bug_id_str,
+                test_ids,
+                "---",
+                "---",
+                comment,
+                "---",
+                "---"
+            ))
+            return False  # No bug opened
 
-        # Detect invalid bug numbers (anything that is not a pure number)
-        invalid_ids = [tid for tid in expected_test_ids if not tid.replace(".", "", 1).isdigit()]
-        if invalid_ids:
-            comment += f"Invalid TC bug number(s): {', '.join(invalid_ids)}. "
+        # Try to open the bug details
+        work_items_search.fill_bug_id_input_and_press_enter(bug_id_str)
 
-        # Validate STD_ID normally and append the validation comment
+        std_id_field_val = work_item.get_std_id_value()
+
         ok, std_comment = validate_std_id(std_id_field_val, expected_test_ids)
-        comment += std_comment  # Append
+        comment += std_comment
 
         status_str = "✅" if ok else "❌"
-
         last_reproduced_status, iteration_path_status = self.check_fields(work_item)
 
         if not ok and self.handle_additional_info_std_id(work_item, expected_test_ids):
@@ -95,14 +106,16 @@ class TestBugSTDValidation(unittest.TestCase):
             status_str = "✅"
 
         results.append(build_result_record(
-            bug_id,
+            bug_id_str,
             test_ids,
             std_id_field_val,
             status_str,
-            comment,  # <-- combined comment
+            comment,
             last_reproduced_status,
             iteration_path_status
         ))
+
+        return True
 
     @staticmethod
     def handle_additional_info_std_id(work_item, expected_test_ids):
@@ -126,7 +139,7 @@ class TestBugSTDValidation(unittest.TestCase):
         # Base comparison
         iteration_path_status = "✅" if iteration_path_text == self.iteration_path_config else "❌"
 
-        # Legacy fallback: replace last segment with "Legacy"
+        # Legacy fallback: replace last segment with "Legacy" if iteration path was not found
         if "/" in self.iteration_path_config:
             parts = self.iteration_path_config.rsplit("/", 1)
             iteration_path_config_legacy = parts[0] + "/Legacy"
