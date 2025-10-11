@@ -7,6 +7,8 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common import TimeoutException, NoSuchElementException, InvalidSessionIdException, WebDriverException
+from selenium.common.exceptions import TimeoutException, ElementClickInterceptedException, \
+    StaleElementReferenceException
 
 
 def safe_click(driver, css_selector: str, retries: int = 3, wait_time: int = 5) -> bool:
@@ -24,6 +26,53 @@ def safe_click(driver, css_selector: str, retries: int = 3, wait_time: int = 5) 
             logging.error(f"Attempt {attempt} failed for {css_selector}: {str(e)}")
             if attempt == retries:
                 return False
+    return False
+
+
+def smart_click(driver, locator, retries=3, wait_time=20, post_condition_locator=None, js_fallback=True):
+    """
+    Clicks an element safely with retries and optional post-click verification.
+
+    :param driver: Selenium WebDriver instance
+    :param locator: Tuple or CSS selector string
+    :param retries: Number of retry attempts if click fails
+    :param wait_time: Seconds to wait for element to be clickable
+    :param post_condition_locator: Optional locator to verify action succeeded
+    :param js_fallback: If True, fallback to JS click if normal click fails
+    :return: True if clicked and post-condition met (if any), else False
+    """
+    # normalize locator if string
+    if isinstance(locator, str):
+        locator = (By.CSS_SELECTOR, locator)
+
+    attempt = 0
+    while attempt < retries:
+        try:
+            # wait for element to be clickable
+            el = WebDriverWait(driver, wait_time).until(EC.element_to_be_clickable(locator))
+
+            try:
+                el.click()
+            except (ElementClickInterceptedException, StaleElementReferenceException):
+                if js_fallback:
+                    driver.execute_script("arguments[0].click();", el)
+                else:
+                    raise
+
+            # if post-condition is provided, wait for it
+            if post_condition_locator:
+                if isinstance(post_condition_locator, str):
+                    post_condition_locator = (By.CSS_SELECTOR, post_condition_locator)
+                WebDriverWait(driver, wait_time).until(
+                    EC.visibility_of_element_located(post_condition_locator)
+                )
+            return True
+        except TimeoutException:
+            print(f"[WARN] Attempt {attempt + 1} failed: element not clickable or post-condition not met.")
+            attempt += 1
+        except Exception as e:
+            print(f"[ERROR] Attempt {attempt + 1} failed: {e}")
+            attempt += 1
     return False
 
 

@@ -6,13 +6,15 @@ from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
 from infra.base_page import BasePage
-from utils.utils import safe_click
+from utils.utils import safe_click, smart_click
 
 
 class WorkItemsSearch(BasePage):
     # -----------------Locators Related to Bugs-----------------
     SEARCH_BAR_INPUT = '#l1-search-input'
     SEARCH_ICON_BUTTON = '.search-icon.cursor-pointer'
+
+    BUG_POPUP_INDICATOR = 'ToBeTyped'
 
     def __init__(self, driver):
         """
@@ -54,4 +56,12 @@ class WorkItemsSearch(BasePage):
         # force focus, no sleep
         self._driver.execute_script("arguments[0].focus();", input_el)
 
-        safe_click(self._driver, self.SEARCH_ICON_BUTTON, retries=3, wait_time=10)
+        # safe_click(self._driver, self.SEARCH_ICON_BUTTON, retries=3, wait_time=10)
+
+        smart_click(
+            self._driver,
+            self.SEARCH_ICON_BUTTON,
+            retries=3,
+            wait_time=10,
+            post_condition_locator=self.BUG_POPUP_INDICATOR
+        )
