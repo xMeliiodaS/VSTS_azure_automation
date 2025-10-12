@@ -5,11 +5,11 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
-from infra.base_page import BasePage
+from logic.base_page_app import BasePageApp
 from utils.utils import safe_click, smart_click
 
 
-class WorkItemsSearch(BasePage):
+class WorkItemsSearch(BasePageApp):
     # -----------------Locators Related to Bugs-----------------
     SEARCH_BAR_INPUT = '#l1-search-input'
     SEARCH_ICON_BUTTON = '.search-icon.cursor-pointer'
@@ -63,5 +63,5 @@ class WorkItemsSearch(BasePage):
             self.SEARCH_ICON_BUTTON,
             retries=3,
             wait_time=10,
-            post_condition_locator=self.BUG_POPUP_INDICATOR
+            post_condition_locator=self.CLOSE_CURRENT_BUG_BUTTON
         )
