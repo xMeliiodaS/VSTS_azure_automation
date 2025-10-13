@@ -28,3 +28,23 @@ From the project root:
 
 ```bash
    python main.py --input data/test_cases.csv --output results/report.html
+```
+
+---
+
+## 🛠️ Building the Python Executable
+
+To package the backend script into a standalone executable using **PyInstaller**, run the following command from the project root:
+
+```bash
+   pyinstaller --onefile .\test\test_bugs_std_validation.py --add-data "infra;infra" 
+```
+
+```bash
+   pyinstaller --onefile .\test\test_excel_violations.py --add-data "infra;infra" 
+```
+
+### 🔍 Explanation:
+- `--onefile`: Bundles everything into a single `.exe` file.
+- `--add-data "infra;infra"`: Includes the `infra` folder in the build so the executable can access required data files at runtime.
+- `test/test_bugs_std_validation.py`: Entry point script for the backend logic.
