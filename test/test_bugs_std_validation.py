@@ -104,6 +104,7 @@ class TestBugSTDValidation(unittest.TestCase):
         if not ok and self.handle_additional_info_std_id(work_item, expected_test_ids):
             std_id_field_val = ", ".join(expected_test_ids)
             status_str = "✅"
+            comment = 'Match'
 
         results.append(build_result_record(
             bug_id_str,

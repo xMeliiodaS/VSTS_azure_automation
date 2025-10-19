@@ -29,7 +29,7 @@ def validate_std_id(vsts_field_val, expected_test_ids):
         return False, "Number of IDs doesn't match expected!"
     else:
         # Perfect match!
-        return True, "Match."
+        return True, "Match"
 
 
 def build_result_record(
