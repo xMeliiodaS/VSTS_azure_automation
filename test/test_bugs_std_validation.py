@@ -53,11 +53,21 @@ class TestBugSTDValidation(unittest.TestCase):
             export_automation_results_html(results)  # Export an empty report
             return
 
+        # --- NEW: Total bugs for progress
+        total_bugs = len(self.bug_map_dict)
+        print(f"PROGRESS_TOTAL: {total_bugs}", flush=True)
+
         try:
-            for bug_id, test_ids in self.bug_map_dict.items():
+            # --- NEW: Iterate with index to emit progress ---
+            for index, (bug_id, test_ids) in enumerate(self.bug_map_dict.items(), start=1):
                 opened = self.process_single_bug(bug_id, test_ids, work_item, work_items_search, results)
+
+                # --- NEW: Emit live progress to stdout ---
+                print(f"PROGRESS: {index}/{total_bugs}", flush=True)
+
                 if opened:
                     BasePageApp(self.driver).close_current_bug_button()
+
         finally:
             if results:
                 # Export automation results HTML (separated)
