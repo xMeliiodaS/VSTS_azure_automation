@@ -73,6 +73,9 @@ class TestBugSTDValidation(unittest.TestCase):
                 # Export automation results HTML (separated)
                 export_automation_results_html(results)
 
+                # --- Signal C# that iteration is done ---
+                print("PROCESS_FINISHED", flush=True)
+
     def process_single_bug(self, bug_id, test_ids, work_item, work_items_search, results):
         """
         Process a single bug: search it, fetch STD_ID, validate against expected test IDs, and append result.
