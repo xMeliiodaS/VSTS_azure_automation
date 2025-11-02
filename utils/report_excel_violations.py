@@ -5,7 +5,8 @@ RULE_NAMES = {
     "Rule1": "Expected Result is not empty AND Test Results Empty",
     "Rule2": "Test Results is not empty AND Expected Result is Empty",
     "Rule3": "Bug not empty AND Test Results = Pass",
-    "Rule4": "Bug Empty AND Results = Fail"
+    "Rule4": "Bug Empty AND Results = Fail",
+    "Rule5": "Actual Results validation (Pass=Y, Fail=N)"
 }
 
 TABLE_STYLE_VALIDATION = """

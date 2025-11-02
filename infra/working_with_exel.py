@@ -64,7 +64,8 @@ COLUMN_MAP = {
     "results": ["test_results", "test_result"],
     "bug": ["defect_no", "bug_no", "bugs_no", "bug_number"],
     "comment": ["comment"],
-    "id": ["id", "test_id"]
+    "id": ["id", "test_id"],
+    "actual": ["actual_results", "actual_result"]
 }
 
 
@@ -114,6 +115,7 @@ def validate_and_summarize(file_path):
     bug_col = get_column(headers, "bug")
     comment_col = get_column(headers, "comment")
     id_col = get_column(headers, "id")
+    actual_col = get_column(headers, "actual") if any("actual" in h for h in headers) else None
 
     data = []
     for row in ws.iter_rows(min_row=2, values_only=True):
@@ -129,6 +131,7 @@ def validate_and_summarize(file_path):
     rule2_rows = []
     rule3_rows = []
     rule4_rows = []
+    rule5_rows = []
 
     for row in data:
         res = str(row.get(results_col) or '').strip()
@@ -152,11 +155,27 @@ def validate_and_summarize(file_path):
         if not bug and res_lower == 'fail':
             rule4_rows.append(row)
 
+        # Rule5: Validate Actual Results vs Test Result consistency
+        if actual_col:
+            actual_val = str(row.get(actual_col) or '').strip()
+            test_result_val = res_lower
+
+            if test_result_val == "pass":
+                # Pass → Actual must be 'Y'
+                if actual_val != "Y":
+                    rule5_rows.append(row)
+
+            elif test_result_val == "fail":
+                # Fail → Actual must start with 'N,' and have a comment after the comma
+                if not actual_val.startswith("N,") or len(actual_val.split(",", 1)[1].strip()) == 0:
+                    rule5_rows.append(row)
+
     rules = {
         "Rule1": rule1_rows,
         "Rule2": rule2_rows,
         "Rule3": rule3_rows,
         "Rule4": rule4_rows,
+        "Rule5": rule5_rows if actual_col else []  # only if actual exists
     }
 
     # Print summary
