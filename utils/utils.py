@@ -87,3 +87,20 @@ def wait_until_element_present(driver, by, selector, timeout=10, poll_frequency=
         if time.time() - start > timeout:
             return False
         time.sleep(poll_frequency)
+
+
+import os
+import shutil
+
+
+def save_report_copy(report_path: str):
+    """Copies a generated report into AppData for persistence."""
+    app_data_folder = os.path.join(
+        os.getenv("APPDATA"),
+        "AT_baseline_verifier"
+    )
+    os.makedirs(app_data_folder, exist_ok=True)
+
+    report_filename = os.path.basename(report_path)
+    target_path = os.path.join(app_data_folder, report_filename)
+    shutil.copy(report_path, target_path)

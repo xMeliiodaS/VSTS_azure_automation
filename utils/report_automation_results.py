@@ -1,7 +1,9 @@
 import os
+import shutil
 import pandas as pd
 
-import shutil
+from utils.utils import save_report_copy
+
 
 TABLE_STYLE_BUGS = """
 <style>
@@ -39,6 +41,7 @@ def export_automation_results_html(results, filename="automation_results.html"):
 
     os.makedirs("reports", exist_ok=True)
     path = os.path.join("reports", filename)
+
     with open(path, "w", encoding="utf-8") as f:
         f.write("\n".join(html_parts))
     save_report_copy(path)
@@ -49,17 +52,3 @@ def export_automation_results_html(results, filename="automation_results.html"):
         pass
 
     print(f"✅ Automation results report generated: {path}")
-
-
-def save_report_copy(report_path: str):
-    # AppData folder path
-    app_data_folder = os.path.join(
-        os.getenv("APPDATA"),
-        "AT_baseline_verifier"
-    )
-    os.makedirs(app_data_folder, exist_ok=True)
-
-    # Copy the report into AppData
-    report_filename = os.path.basename(report_path)
-    target_path = os.path.join(app_data_folder, report_filename)
-    shutil.copy(report_path, target_path)

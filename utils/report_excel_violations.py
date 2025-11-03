@@ -1,6 +1,8 @@
 import os
 import pandas as pd
 
+from utils.utils import save_report_copy
+
 RULE_NAMES = {
     "Rule1": "Expected Result is not empty AND Test Results Empty",
     "Rule2": "Test Results is not empty AND Expected Result is Empty",
@@ -25,7 +27,7 @@ TABLE_STYLE_VALIDATION = """
 RULE_COLUMN_NAME = "Rule"
 TC_ID = "Test Case ID"
 
-def export_excel_violations_html(violations, filename="violations_report.html"):
+def export_excel_violations_html(violations, filename="rules_violations_report.html"):
     """
     Generates HTML report for Excel validation only.
     """
@@ -80,7 +82,8 @@ def export_excel_violations_html(violations, filename="violations_report.html"):
 
     norm_vio = normalize_violations(violations)
     html_parts = [
-        f"<html><head><meta charset='UTF-8'>{TABLE_STYLE_VALIDATION}</head><body><h2>STD Excel Validation Summary</h2>"]
+        f"<html><head><meta charset='UTF-8'>{TABLE_STYLE_VALIDATION}</head><body><h2>STD Excel Validation Summary</h2>"
+    ]
 
     if not norm_vio:
         html_parts.append("<p class='success'>No violations found ✅</p>")
@@ -89,13 +92,19 @@ def export_excel_violations_html(violations, filename="violations_report.html"):
         html_parts.append(df.to_html(index=False, escape=False))
 
     html_parts.append("</body></html>")
+
     os.makedirs("reports", exist_ok=True)
     path = os.path.join("reports", filename)
+
     with open(path, "w", encoding="utf-8") as f:
         f.write("\n".join(html_parts))
+
+    # ✅ unified save
+    save_report_copy(path)
 
     try:
         os.startfile(path)
     except Exception:
         pass
+
     print(f"✅ Violations report generated: {path}")
