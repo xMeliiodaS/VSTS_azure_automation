@@ -33,7 +33,7 @@ def validate_std_id(vsts_field_val, expected_test_ids):
 
 
 def build_result_record(
-        bug_id, test_ids, field_val, status_str, comment, last_reproduced_in_status, iteration_path_status):
+        bug_id, test_ids, field_val, status_str, comment, last_reproduced_in_status, iteration_path_status, std_name_status=None):
     """
     Builds a dictionary representing a single validation result for reporting.
     - bug_id: The Azure Bug ID
@@ -41,6 +41,9 @@ def build_result_record(
     - field_val: Value from the STD_ID field in Azure VSTS
     - status_str: Validation status
     - comment: Detailed message for users/reports about why it passed/failed
+    - last_reproduced_in_status: Status of Last Reproduced In field validation
+    - iteration_path_status: Status of Iteration Path field validation
+    - std_name_status: Status of STD Name field validation
 
     Returns:
         dict with all information for this bug, for tabular/HTML/CSV reporting
@@ -52,5 +55,6 @@ def build_result_record(
         "Test Case ID Status": status_str,
         "Last Reproduced In Status": last_reproduced_in_status or "❌",
         "Iteration Path Status": iteration_path_status or "❌",
+        "STD Name Status": std_name_status or "❌",
         "Comments": comment
     }

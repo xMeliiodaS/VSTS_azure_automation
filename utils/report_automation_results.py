@@ -16,8 +16,8 @@ TABLE_STYLE_BUGS = """
   tr:hover { background: #44476b; transition: background .12s; }
   .success { color: #3ff7b6; font-weight: 600; text-align: center; }
   
-    /* Center the 4th, 5th, 6th columns (✅/❌ columns) */
-  td:nth-child(4), td:nth-child(5), td:nth-child(6) {
+    /* Center the 4th, 5th, 6th, 7th columns (✅/❌ columns) */
+  td:nth-child(4), td:nth-child(5), td:nth-child(6), td:nth-child(7) {
     text-align: center;
   }
 </style>

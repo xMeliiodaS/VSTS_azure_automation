@@ -27,6 +27,7 @@ class TestBugSTDValidation(unittest.TestCase):
 
         self.last_reproduced_in_config = self.config["current_version"]
         self.iteration_path_config = self.config["iteration_path"]
+        self.std_name_config = self.config.get("std_name", "")
 
         base_page = BasePage(self.driver)
         base_page.navigate_with_retry(self.config["url"])
@@ -99,6 +100,7 @@ class TestBugSTDValidation(unittest.TestCase):
                 "---",
                 comment,
                 "---",
+                "---",
                 "---"
             ))
             return False  # No bug opened
@@ -112,7 +114,7 @@ class TestBugSTDValidation(unittest.TestCase):
         comment += std_comment
 
         status_str = "✅" if ok else "❌"
-        last_reproduced_status, iteration_path_status = self.check_fields(work_item)
+        last_reproduced_status, iteration_path_status, std_name_status = self.check_fields(work_item)
 
         if not ok and self.handle_additional_info_std_id(work_item, expected_test_ids):
             std_id_field_val = ", ".join(expected_test_ids)
@@ -126,7 +128,8 @@ class TestBugSTDValidation(unittest.TestCase):
             status_str,
             comment,
             last_reproduced_status,
-            iteration_path_status
+            iteration_path_status,
+            std_name_status
         ))
 
         return True
@@ -143,14 +146,15 @@ class TestBugSTDValidation(unittest.TestCase):
 
     def check_fields(self, work_item):
         """
-        Compare the Last_reproduced_in and Iteration_path fields to the config.json file
+        Compare the Last_reproduced_in, Iteration_path, and STD Name fields to the config.json file
         """
         last_reproduced_in_text = work_item.get_last_reproduce_in_value()
         iteration_path_text = work_item.get_iteration_path_value()
+        std_name_text = work_item.get_std_name_value()
 
         last_reproduced_status = "✅" if last_reproduced_in_text == self.last_reproduced_in_config else "❌"
 
-        # Base comparison
+        # Base comparison for iteration path
         iteration_path_status = "✅" if iteration_path_text == self.iteration_path_config else "❌"
 
         # Legacy fallback: replace last segment with "Legacy" if iteration path was not found
@@ -160,7 +164,10 @@ class TestBugSTDValidation(unittest.TestCase):
             if iteration_path_text == iteration_path_config_legacy:
                 iteration_path_status = "✅"
 
-        return last_reproduced_status, iteration_path_status
+        # Compare STD Name field to config
+        std_name_status = "✅" if std_name_text == self.std_name_config else "❌"
+
+        return last_reproduced_status, iteration_path_status, std_name_status
 
 
 if __name__ == "__main__":

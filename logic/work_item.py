@@ -9,6 +9,7 @@ from infra.base_page import BasePage
 class WorkItem(BasePage):
     # -----------------Locators Related to Bugs-----------------
     STD_ID_FIELD = 'input[aria-label="STD ID"]'
+    STD_NAME_FIELD = 'input[aria-label="STD Name"]'
     ADDITIONAL_INFO_FILED = 'div[aria-label="AdditionalInfo:"]'
     ADDITIONAL_INFO_BUTTON = 'li.work-item-form-tab[aria-label="Additional Information"]'
 
@@ -27,6 +28,13 @@ class WorkItem(BasePage):
         Wait for the STD_ID input field to be visible and return its current value attribute.
         """
         field = self.wait_visible(By.CSS_SELECTOR, self.STD_ID_FIELD, timeout=30)
+        return field.get_attribute("value")
+
+    def get_std_name_value(self):
+        """
+        Wait for the STD Name input field to be visible and return its current value attribute.
+        """
+        field = self.wait_visible(By.CSS_SELECTOR, self.STD_NAME_FIELD, timeout=30)
         return field.get_attribute("value")
 
     def get_last_reproduce_in_value(self):
