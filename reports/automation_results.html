@@ -1,0 +1,194 @@
+<html><head><meta charset='UTF-8'>
+<style>
+  body { font-family: 'Segoe UI', Arial, sans-serif; background: #262a34; color: #f1f1fa; padding: 20px; }
+  h1, h2 { text-align: center; }
+  table { border-collapse: collapse; width: 90%; margin: 16px auto; background: #32364a; border-radius: 10px; }
+  th, td { padding: 10px 12px; border: 1px solid #424758; text-align: left; }
+  th { background: linear-gradient(90deg, #4e59c2 0%, #9755e4 100%); color: #fff; font-weight: bold; text-align: center;}
+  tr:nth-child(even) { background: #373d52; }
+  tr:hover { background: #44476b; transition: background .12s; }
+  .success { color: #3ff7b6; font-weight: 600; text-align: center; }
+  
+    /* Center the 4th, 5th, 6th, 7th columns (✅/❌ columns) */
+  td:nth-child(4), td:nth-child(5), td:nth-child(6), td:nth-child(7) {
+    text-align: center;
+  }
+</style>
+</head><body><h2>Automation Results</h2>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th>Bug ID</th>
+      <th>STD ID in DOORS</th>
+      <th>STD ID in VSTS</th>
+      <th>Test Case ID Status</th>
+      <th>Last Reproduced In Status</th>
+      <th>Iteration Path Status</th>
+      <th>STD Name Status</th>
+      <th>Comments</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>273418</td>
+      <td>801</td>
+      <td>801</td>
+      <td>✅</td>
+      <td>✅</td>
+      <td>❌</td>
+      <td>❌</td>
+      <td>Match</td>
+    </tr>
+    <tr>
+      <td>271511</td>
+      <td>780, 781</td>
+      <td>780, 781</td>
+      <td>✅</td>
+      <td>❌</td>
+      <td>❌</td>
+      <td>❌</td>
+      <td>Match</td>
+    </tr>
+    <tr>
+      <td>273421</td>
+      <td>780, 781, 784, 788, 789</td>
+      <td>780, 781,784, 788, 789</td>
+      <td>✅</td>
+      <td>✅</td>
+      <td>❌</td>
+      <td>❌</td>
+      <td>Match</td>
+    </tr>
+    <tr>
+      <td>273427</td>
+      <td>783, 788, 789, 790, 792, 793, 795, 660, 701, 703</td>
+      <td>783, 788, 789, 790, 792, 793, 795, 660, 701, 703</td>
+      <td>✅</td>
+      <td>✅</td>
+      <td>❌</td>
+      <td>❌</td>
+      <td>Match</td>
+    </tr>
+    <tr>
+      <td>273667</td>
+      <td>807, 660, 701, 703</td>
+      <td>807, 660, 701, 703</td>
+      <td>✅</td>
+      <td>❌</td>
+      <td>❌</td>
+      <td>❌</td>
+      <td>Match</td>
+    </tr>
+    <tr>
+      <td>271457</td>
+      <td>345</td>
+      <td>345</td>
+      <td>✅</td>
+      <td>✅</td>
+      <td>❌</td>
+      <td>❌</td>
+      <td>Match</td>
+    </tr>
+    <tr>
+      <td>273582</td>
+      <td>92, 93, 94, 95, 96, 97</td>
+      <td>92, 93, 94, 95, 96, 97</td>
+      <td>✅</td>
+      <td>✅</td>
+      <td>❌</td>
+      <td>❌</td>
+      <td>Match</td>
+    </tr>
+    <tr>
+      <td>255085</td>
+      <td>153, 155, 159, 560</td>
+      <td>153, 155, 159, 560</td>
+      <td>✅</td>
+      <td>❌</td>
+      <td>❌</td>
+      <td>❌</td>
+      <td>Match</td>
+    </tr>
+    <tr>
+      <td>271488</td>
+      <td>326, 327, 328</td>
+      <td>326, 327, 328</td>
+      <td>✅</td>
+      <td>❌</td>
+      <td>❌</td>
+      <td>❌</td>
+      <td>Match</td>
+    </tr>
+    <tr>
+      <td>268727</td>
+      <td>530, 532</td>
+      <td>530, 532</td>
+      <td>✅</td>
+      <td>❌</td>
+      <td>❌</td>
+      <td>❌</td>
+      <td>Match</td>
+    </tr>
+    <tr>
+      <td>273751</td>
+      <td>258, 272, 265</td>
+      <td>258, 265, 272</td>
+      <td>✅</td>
+      <td>✅</td>
+      <td>❌</td>
+      <td>❌</td>
+      <td>Match</td>
+    </tr>
+    <tr>
+      <td>249115</td>
+      <td>259, 273, 266</td>
+      <td>259,266,273</td>
+      <td>✅</td>
+      <td>❌</td>
+      <td>❌</td>
+      <td>❌</td>
+      <td>Match</td>
+    </tr>
+    <tr>
+      <td>255045</td>
+      <td>306, 307, 308, 309, 311, 312, 313, 314, 316, 317, 318, 319</td>
+      <td>306, 307, 308, 309, 311, 312, 313, 314, 316, 317, 318, 319</td>
+      <td>✅</td>
+      <td>✅</td>
+      <td>❌</td>
+      <td>❌</td>
+      <td>Match</td>
+    </tr>
+    <tr>
+      <td>273967</td>
+      <td>219, 223, 226, 230, 233, 237</td>
+      <td>219, 223, 226, 230, 233, 237</td>
+      <td>✅</td>
+      <td>❌</td>
+      <td>❌</td>
+      <td>❌</td>
+      <td>Match</td>
+    </tr>
+    <tr>
+      <td>274059</td>
+      <td>247, 249, 254, 256, 251</td>
+      <td>247, 249, 254, 256, 251</td>
+      <td>✅</td>
+      <td>❌</td>
+      <td>❌</td>
+      <td>❌</td>
+      <td>Match</td>
+    </tr>
+    <tr>
+      <td>273996</td>
+      <td>342</td>
+      <td>342</td>
+      <td>✅</td>
+      <td>❌</td>
+      <td>❌</td>
+      <td>❌</td>
+      <td>Match</td>
+    </tr>
+  </tbody>
+</table>
+</body></html>

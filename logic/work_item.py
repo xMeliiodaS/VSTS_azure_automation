@@ -9,7 +9,7 @@ from infra.base_page import BasePage
 class WorkItem(BasePage):
     # -----------------Locators Related to Bugs-----------------
     STD_ID_FIELD = 'input[aria-label="STD ID"]'
-    STD_NAME_FIELD = 'input[aria-label="STD Name"]'
+    STD_NAME_FIELD = 'input[aria-label="STDName"]'
     ADDITIONAL_INFO_FILED = 'div[aria-label="AdditionalInfo:"]'
     ADDITIONAL_INFO_BUTTON = 'li.work-item-form-tab[aria-label="Additional Information"]'
 
