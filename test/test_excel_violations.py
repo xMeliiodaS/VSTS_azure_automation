@@ -4,6 +4,7 @@ from infra.config_provider import ConfigProvider
 from infra.working_with_exel import validate_and_summarize
 
 from utils.report_excel_violations import export_excel_violations_html
+from utils.constants import APP_DATA_FOLDER_NAME, CONFIG_FILE_NAME
 
 
 class TestExcelViolations(unittest.TestCase):
@@ -24,9 +25,9 @@ class TestExcelViolations(unittest.TestCase):
 if __name__ == "__main__":
     appdata_folder = os.path.join(
         os.environ.get('APPDATA', os.path.expanduser('~\\AppData\\Roaming')),
-        'AT_baseline_verifier'
+        APP_DATA_FOLDER_NAME
     )
-    config_path = os.path.join(appdata_folder, 'config.json')
+    config_path = os.path.join(appdata_folder, CONFIG_FILE_NAME)
 
     config = ConfigProvider.load_config_json(config_path)
 

@@ -2,14 +2,7 @@ import os
 import pandas as pd
 
 from utils.utils import save_report_copy
-
-RULE_NAMES = {
-    "Rule1": "Expected Result is not empty AND Test Results Empty",
-    "Rule2": "Test Results is not empty AND Expected Result is Empty",
-    "Rule3": "Bug not empty AND Test Results = Pass",
-    "Rule4": "Bug Empty AND Results = Fail",
-    "Rule5": "Actual Results validation (Pass=Y, Fail=N)"
-}
+from utils.constants import ExcelRules, ReportConfig, Status, REPORTS_FOLDER_NAME
 
 TABLE_STYLE_VALIDATION = """
 <style>
@@ -24,10 +17,7 @@ TABLE_STYLE_VALIDATION = """
 </style>
 """
 
-RULE_COLUMN_NAME = "Rule"
-TC_ID = "Test Case ID"
-
-def export_excel_violations_html(violations, filename="rules_violations_report.html"):
+def export_excel_violations_html(violations, filename=ReportConfig.VIOLATIONS_REPORT_FILENAME):
     """
     Generates HTML report for Excel validation only.
     """
@@ -43,7 +33,7 @@ def export_excel_violations_html(violations, filename="rules_violations_report.h
                     rows = elem.get("rows") or []
                     normalized.append({
                         "rule_key": rule_key,
-                        "rule_name": RULE_NAMES.get(rule_key, str(rule_key)),
+                        "rule_name": ExcelRules.RULE_NAMES.get(rule_key, str(rule_key)),
                         "rows": rows
                     })
                 return normalized
@@ -57,7 +47,7 @@ def export_excel_violations_html(violations, filename="rules_violations_report.h
         for rule_key, rows in items:
             normalized.append({
                 "rule_key": rule_key,
-                "rule_name": RULE_NAMES.get(rule_key, str(rule_key)),
+                "rule_name": ExcelRules.RULE_NAMES.get(rule_key, str(rule_key)),
                 "rows": rows or []
             })
         return normalized
@@ -76,9 +66,9 @@ def export_excel_violations_html(violations, filename="rules_violations_report.h
             rule_name = bucket["rule_name"]
             rows = bucket["rows"]
             test_case_ids = ", ".join(
-                str(first_nonempty(r, ID_KEYS)) for r in rows if first_nonempty(r, ID_KEYS) != "✅")
-            data.append({RULE_COLUMN_NAME: rule_name, TC_ID: test_case_ids or "✅"})
-        return pd.DataFrame(data) if data else pd.DataFrame([{RULE_COLUMN_NAME: "—", TC_ID: "—"}])
+                str(first_nonempty(r, ID_KEYS)) for r in rows if first_nonempty(r, ID_KEYS) != Status.SUCCESS)
+            data.append({ExcelRules.RULE_COLUMN_NAME: rule_name, ExcelRules.TC_ID_COLUMN_NAME: test_case_ids or Status.SUCCESS})
+        return pd.DataFrame(data) if data else pd.DataFrame([{ExcelRules.RULE_COLUMN_NAME: "—", ExcelRules.TC_ID_COLUMN_NAME: "—"}])
 
     norm_vio = normalize_violations(violations)
     html_parts = [
@@ -86,15 +76,15 @@ def export_excel_violations_html(violations, filename="rules_violations_report.h
     ]
 
     if not norm_vio:
-        html_parts.append("<p class='success'>No violations found ✅</p>")
+        html_parts.append(f"<p class='success'>{ReportConfig.NO_VIOLATIONS_MESSAGE}</p>")
     else:
         df = rows_to_df(norm_vio)
         html_parts.append(df.to_html(index=False, escape=False))
 
     html_parts.append("</body></html>")
 
-    os.makedirs("reports", exist_ok=True)
-    path = os.path.join("reports", filename)
+    os.makedirs(REPORTS_FOLDER_NAME, exist_ok=True)
+    path = os.path.join(REPORTS_FOLDER_NAME, filename)
 
     with open(path, "w", encoding="utf-8") as f:
         f.write("\n".join(html_parts))

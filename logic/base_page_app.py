@@ -6,6 +6,7 @@ from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
 from utils.utils import safe_click
+from utils.constants import Timeouts, Retries
 
 from infra.base_page import BasePage
 
@@ -25,4 +26,4 @@ class BasePageApp(BasePage):
         """
         Exit the opened window of the current bug.
         """
-        safe_click(self._driver, self.CLOSE_CURRENT_BUG_BUTTON, retries=3, wait_time=10)
+        safe_click(self._driver, self.CLOSE_CURRENT_BUG_BUTTON, retries=Retries.CLICK_RETRIES, wait_time=Timeouts.SHORT_TIMEOUT)

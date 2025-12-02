@@ -3,6 +3,7 @@ from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
 from utils.utils import safe_click
+from utils.constants import Timeouts
 from infra.base_page import BasePage
 
 
@@ -27,35 +28,35 @@ class WorkItem(BasePage):
         """
         Wait for the STD_ID input field to be visible and return its current value attribute.
         """
-        field = self.wait_visible(By.CSS_SELECTOR, self.STD_ID_FIELD, timeout=30)
+        field = self.wait_visible(By.CSS_SELECTOR, self.STD_ID_FIELD, timeout=Timeouts.ELEMENT_VISIBILITY_TIMEOUT)
         return field.get_attribute("value")
 
     def get_std_name_value(self):
         """
         Wait for the STD Name input field to be visible and return its current value attribute.
         """
-        field = self.wait_visible(By.CSS_SELECTOR, self.STD_NAME_FIELD, timeout=30)
+        field = self.wait_visible(By.CSS_SELECTOR, self.STD_NAME_FIELD, timeout=Timeouts.ELEMENT_VISIBILITY_TIMEOUT)
         return field.get_attribute("value")
 
     def get_last_reproduce_in_value(self):
         """
         Wait for the Last_Reproduced_In input field to be visible and return its current value attribute.
         """
-        field = self.wait_visible(By.CSS_SELECTOR, self.LAST_REPRODUCED_IN_FIELD, timeout=30)
+        field = self.wait_visible(By.CSS_SELECTOR, self.LAST_REPRODUCED_IN_FIELD, timeout=Timeouts.ELEMENT_VISIBILITY_TIMEOUT)
         return field.get_attribute("value")
 
     def get_iteration_path_value(self):
         """
         Wait for the Iteration_Path input field to be visible and return its current value attribute.
         """
-        field = self.wait_visible(By.CSS_SELECTOR, self.ITERATION_PATH_FIELD, timeout=30)
+        field = self.wait_visible(By.CSS_SELECTOR, self.ITERATION_PATH_FIELD, timeout=Timeouts.ELEMENT_VISIBILITY_TIMEOUT)
         return field.get_attribute("value")
 
     def check_std_id_is_empty(self):
         """
         Checks whether the STD ID input field is empty, unset, or set to the string "None" (case-insensitive).
         """
-        field = WebDriverWait(self._driver, 20).until(
+        field = WebDriverWait(self._driver, Timeouts.FIELD_VALIDATION_TIMEOUT).until(
             EC.visibility_of_element_located((By.CSS_SELECTOR, self.STD_ID_FIELD)))
         value = field.get_attribute("value")
         return value is None or value == "" or value.strip().lower() == "none"
@@ -70,6 +71,6 @@ class WorkItem(BasePage):
         """
         Wait for the 'Additional Info' field to be visible and return its text content.
         """
-        field = WebDriverWait(self._driver, 20).until(
+        field = WebDriverWait(self._driver, Timeouts.FIELD_VALIDATION_TIMEOUT).until(
             EC.visibility_of_element_located((By.CSS_SELECTOR, self.ADDITIONAL_INFO_FILED)))
         return field.text

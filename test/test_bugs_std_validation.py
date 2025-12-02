@@ -12,6 +12,10 @@ from logic.work_items_search import WorkItemsSearch
 from utils.report_automation_results import export_automation_results_html
 from utils.std_id_validator import validate_std_id, build_result_record
 from utils.additional_info_extract_std_tc_id import extract_tc_ids_from_additional_info
+from utils.constants import (
+    Timeouts, Status, STDConstants, APP_DATA_FOLDER_NAME, 
+    CONFIG_FILE_NAME, ProgressMessages
+)
 
 
 class TestBugSTDValidation(unittest.TestCase):
@@ -32,7 +36,7 @@ class TestBugSTDValidation(unittest.TestCase):
         base_page = BasePage(self.driver)
         base_page.navigate_with_retry(self.config["url"])
 
-        time.sleep(3)
+        time.sleep(Timeouts.PAGE_LOAD_SLEEP)
 
     def tearDown(self):
         """
@@ -50,13 +54,13 @@ class TestBugSTDValidation(unittest.TestCase):
 
         # Check if there are no bugs to process
         if not self.bug_map_dict:
-            print("No bugs found in the bug map. Exporting an empty report.")
+            print(ProgressMessages.NO_BUGS_FOUND)
             export_automation_results_html(results)  # Export an empty report
             return
 
         # --- NEW: Total bugs for progress
         total_bugs = len(self.bug_map_dict)
-        print(f"PROGRESS_TOTAL: {total_bugs}", flush=True)
+        print(f"{ProgressMessages.PROGRESS_TOTAL_PREFIX} {total_bugs}", flush=True)
 
         try:
             # --- NEW: Iterate with index to emit progress ---
@@ -64,7 +68,7 @@ class TestBugSTDValidation(unittest.TestCase):
                 opened = self.process_single_bug(bug_id, test_ids, work_item, work_items_search, results)
 
                 # --- NEW: Emit live progress to stdout ---
-                print(f"PROGRESS: {index}/{total_bugs}", flush=True)
+                print(f"{ProgressMessages.PROGRESS_PREFIX} {index}/{total_bugs}", flush=True)
 
                 if opened:
                     BasePageApp(self.driver).close_current_bug_button()
@@ -75,7 +79,7 @@ class TestBugSTDValidation(unittest.TestCase):
                 export_automation_results_html(results)
 
                 # --- Signal C# that iteration is done ---
-                print("PROCESS_FINISHED", flush=True)
+                print(ProgressMessages.PROCESS_FINISHED, flush=True)
 
     def process_single_bug(self, bug_id, test_ids, work_item, work_items_search, results):
         """
@@ -96,12 +100,12 @@ class TestBugSTDValidation(unittest.TestCase):
             results.append(build_result_record(
                 bug_id_str,
                 test_ids,
-                "---",
-                "---",
+                Status.PLACEHOLDER,
+                Status.PLACEHOLDER,
                 comment,
-                "---",
-                "---",
-                "---"
+                Status.PLACEHOLDER,
+                Status.PLACEHOLDER,
+                Status.PLACEHOLDER
             ))
             return False  # No bug opened
 
@@ -113,13 +117,13 @@ class TestBugSTDValidation(unittest.TestCase):
         ok, std_comment = validate_std_id(std_id_field_val, expected_test_ids)
         comment += std_comment
 
-        status_str = "✅" if ok else "❌"
+        status_str = Status.SUCCESS if ok else Status.FAILURE
         last_reproduced_status, iteration_path_status, std_name_status = self.check_fields(work_item)
 
         if not ok and self.handle_additional_info_std_id(work_item, expected_test_ids):
             std_id_field_val = ", ".join(expected_test_ids)
-            status_str = "✅"
-            comment = 'Match'
+            status_str = Status.SUCCESS
+            comment = Status.MATCH
 
         results.append(build_result_record(
             bug_id_str,
@@ -141,7 +145,7 @@ class TestBugSTDValidation(unittest.TestCase):
         """
         work_item.click_on_additional_info_tab()
         additional_info_text = work_item.get_additional_info_value()
-        tc_id_list = extract_tc_ids_from_additional_info("Feather - Unique Functionality STD", additional_info_text)
+        tc_id_list = extract_tc_ids_from_additional_info(STDConstants.DEFAULT_STD_NAME, additional_info_text)
         return sorted(tc_id_list) == sorted(expected_test_ids)
 
     def check_fields(self, work_item):
@@ -152,20 +156,20 @@ class TestBugSTDValidation(unittest.TestCase):
         iteration_path_text = work_item.get_iteration_path_value()
         std_name_text = work_item.get_std_name_value()
 
-        last_reproduced_status = "✅" if last_reproduced_in_text == self.last_reproduced_in_config else "❌"
+        last_reproduced_status = Status.SUCCESS if last_reproduced_in_text == self.last_reproduced_in_config else Status.FAILURE
 
         # Base comparison for iteration path
-        iteration_path_status = "✅" if iteration_path_text == self.iteration_path_config else "❌"
+        iteration_path_status = Status.SUCCESS if iteration_path_text == self.iteration_path_config else Status.FAILURE
 
         # Legacy fallback: replace last segment with "Legacy" if iteration path was not found
         if "/" in self.iteration_path_config:
             parts = self.iteration_path_config.rsplit("/", 1)
             iteration_path_config_legacy = parts[0] + "/Legacy"
             if iteration_path_text == iteration_path_config_legacy:
-                iteration_path_status = "✅"
+                iteration_path_status = Status.SUCCESS
 
         # Compare STD Name field to config
-        std_name_status = "✅" if std_name_text == self.std_name_config else "❌"
+        std_name_status = Status.SUCCESS if std_name_text == self.std_name_config else Status.FAILURE
 
         return last_reproduced_status, iteration_path_status, std_name_status
 
@@ -173,9 +177,9 @@ class TestBugSTDValidation(unittest.TestCase):
 if __name__ == "__main__":
     appdata_folder = os.path.join(
         os.environ.get('APPDATA', os.path.expanduser('~\\AppData\\Roaming')),
-        'AT_baseline_verifier'
+        APP_DATA_FOLDER_NAME
     )
-    config_path = os.path.join(appdata_folder, 'config.json')
+    config_path = os.path.join(appdata_folder, CONFIG_FILE_NAME)
 
     config = ConfigProvider.load_config_json(config_path)
 

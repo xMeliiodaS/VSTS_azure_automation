@@ -1,3 +1,6 @@
+from utils.constants import Status
+
+
 def validate_std_id(vsts_field_val, expected_test_ids):
     """
     Validates that the STD_ID field (from Azure) matches the expected test IDs from Excel.
@@ -18,18 +21,18 @@ def validate_std_id(vsts_field_val, expected_test_ids):
 
     # If nothing in the STD_ID field, that's a fail
     if not field_std_ids:
-        return False, "STD ID is empty."
+        return False, Status.STD_ID_EMPTY
 
     # If the set of IDs doesn't match (any out of place or wrong/extra), fail
     elif set(field_std_ids) != set(expected_test_ids):
-        return False, "TC IDs don't match expected TC IDs."
+        return False, Status.TC_IDS_DONT_MATCH
 
     # If the number of IDs is wrong (e.g., duplicates or missing), fail
     elif len(field_std_ids) != len(expected_test_ids):
-        return False, "Number of IDs doesn't match expected!"
+        return False, Status.ID_COUNT_MISMATCH
     else:
         # Perfect match!
-        return True, "Match"
+        return True, Status.MATCH
 
 
 def build_result_record(
@@ -52,9 +55,9 @@ def build_result_record(
         "Bug ID": bug_id,
         "STD ID in DOORS": ", ".join([str(tid) for tid in test_ids]),
         "STD ID in VSTS": field_val,
-        "STD Name Status": std_name_status or "❌",
+        "STD Name Status": std_name_status or Status.FAILURE,
         "Test Case ID Status": status_str,
-        "Last Reproduced In Status": last_reproduced_in_status or "❌",
-        "Iteration Path Status": iteration_path_status or "❌",
+        "Last Reproduced In Status": last_reproduced_in_status or Status.FAILURE,
+        "Iteration Path Status": iteration_path_status or Status.FAILURE,
         "Comments": comment
     }

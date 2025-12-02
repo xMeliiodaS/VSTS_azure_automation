@@ -2,6 +2,8 @@ import os
 import json
 import shutil
 
+from utils.constants import APP_DATA_FOLDER_NAME, CONFIG_FILE_NAME
+
 
 class ConfigProvider:
     """
@@ -20,13 +22,13 @@ class ConfigProvider:
         if path is None:
             # --- Determine per-user AppData path ---
             appdata = os.getenv('APPDATA') or os.path.expanduser('~\\AppData\\Roaming')
-            user_config_folder = os.path.join(appdata, 'AT_baseline_verifier')
+            user_config_folder = os.path.join(appdata, APP_DATA_FOLDER_NAME)
             os.makedirs(user_config_folder, exist_ok=True)
-            path = os.path.join(user_config_folder, 'config.json')
+            path = os.path.join(user_config_folder, CONFIG_FILE_NAME)
 
             # --- If config is missing, optionally copy default from exe folder ---
             if not os.path.exists(path):
-                default_config_path = os.path.join(os.path.dirname(__file__), 'config.json')
+                default_config_path = os.path.join(os.path.dirname(__file__), CONFIG_FILE_NAME)
                 if os.path.exists(default_config_path):
                     shutil.copy(default_config_path, path)
                 else:

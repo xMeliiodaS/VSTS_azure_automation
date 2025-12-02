@@ -10,8 +10,10 @@ from selenium.common import TimeoutException, NoSuchElementException, InvalidSes
 from selenium.common.exceptions import TimeoutException, ElementClickInterceptedException, \
     StaleElementReferenceException
 
+from utils.constants import Timeouts, Retries, APP_DATA_FOLDER_NAME
 
-def safe_click(driver, css_selector: str, retries: int = 3, wait_time: int = 5) -> bool:
+
+def safe_click(driver, css_selector: str, retries: int = Retries.DEFAULT_RETRIES, wait_time: int = Timeouts.SHORT_TIMEOUT) -> bool:
     """
     Safely clicks an element with retries, scrolling into view and handling common Selenium errors.
     """
@@ -29,7 +31,7 @@ def safe_click(driver, css_selector: str, retries: int = 3, wait_time: int = 5) 
     return False
 
 
-def smart_click(driver, locator, retries=3, wait_time=20, post_condition_locator=None, js_fallback=True):
+def smart_click(driver, locator, retries=Retries.DEFAULT_RETRIES, wait_time=Timeouts.DEFAULT_TIMEOUT, post_condition_locator=None, js_fallback=True):
     """
     Clicks an element safely with retries and optional post-click verification.
 
@@ -76,7 +78,7 @@ def smart_click(driver, locator, retries=3, wait_time=20, post_condition_locator
     return False
 
 
-def wait_until_element_present(driver, by, selector, timeout=10, poll_frequency=0.2):
+def wait_until_element_present(driver, by, selector, timeout=Timeouts.SHORT_TIMEOUT, poll_frequency=Timeouts.POLL_FREQUENCY):
     start = time.time()
     while True:
         try:
@@ -97,7 +99,7 @@ def save_report_copy(report_path: str):
     """Copies a generated report into AppData for persistence."""
     app_data_folder = os.path.join(
         os.getenv("APPDATA"),
-        "AT_baseline_verifier"
+        APP_DATA_FOLDER_NAME
     )
     os.makedirs(app_data_folder, exist_ok=True)
 

@@ -59,14 +59,7 @@ def get_bug_to_tests_map(excel_path):
 from openpyxl import load_workbook
 from collections import defaultdict
 
-COLUMN_MAP = {
-    "expected": ["expected_results", "expected_result"],
-    "results": ["test_results", "test_result"],
-    "bug": ["defect_no", "bug_no", "bugs_no", "bug_number"],
-    "comment": ["comment"],
-    "id": ["id", "test_id"],
-    "actual": ["actual_results", "actual_result"]
-}
+from utils.constants import COLUMN_MAP, STDConstants, ExcelRules
 
 
 def normalize_columns(cols):
@@ -87,7 +80,7 @@ def get_column(headers, key):
 
 def is_precondition_row(row, headers):
     """Check if row is a precondition row."""
-    possible_must_have = ['id', 'headline', 'test_description', 'test_desc', 'description', 'test_details']
+    possible_must_have = ExcelRules.POSSIBLE_MUST_HAVE_COLUMNS
     must_have = [h for h in headers if h in possible_must_have]
     other_cols = [h for h in headers if h not in must_have]
 
@@ -140,7 +133,7 @@ def validate_and_summarize(file_path):
         bug = row.get(bug_col)
 
         # Rule1: expected filled AND results empty, ignore 'N/A'/'NOT TESTED'
-        if exp and (res == '' or res_lower in ['none', 'nan']) and res_lower not in ['n/a', 'not tested']:
+        if exp and (res == '' or res_lower in [STDConstants.NONE, STDConstants.NAN]) and res_lower not in [STDConstants.N_A, STDConstants.NOT_TESTED]:
             rule1_rows.append(row)
 
         # Rule2: results filled AND expected empty, excluding precondition
@@ -148,11 +141,11 @@ def validate_and_summarize(file_path):
             rule2_rows.append(row)
 
         # Rule3: bug filled AND results = pass
-        if bug and res_lower == 'pass':
+        if bug and res_lower == STDConstants.PASS:
             rule3_rows.append(row)
 
         # Rule4: bug empty AND results = fail
-        if not bug and res_lower == 'fail':
+        if not bug and res_lower == STDConstants.FAIL:
             rule4_rows.append(row)
 
         # Rule5: Validate Actual Results vs Test Result consistency
@@ -160,14 +153,14 @@ def validate_and_summarize(file_path):
             actual_val = str(row.get(actual_col) or '').strip()
             test_result_val = res_lower
 
-            if test_result_val == "pass":
+            if test_result_val == STDConstants.PASS:
                 # Pass → Actual must be 'Y'
-                if actual_val != "Y":
+                if actual_val != STDConstants.ACTUAL_PASS_VALUE:
                     rule5_rows.append(row)
 
-            elif test_result_val == "fail":
+            elif test_result_val == STDConstants.FAIL:
                 # Fail → Actual must start with 'N,' and have a comment after the comma
-                if not actual_val.startswith("N,") or len(actual_val.split(",", 1)[1].strip()) == 0:
+                if not actual_val.startswith(STDConstants.ACTUAL_FAIL_PREFIX) or len(actual_val.split(",", 1)[1].strip()) == 0:
                     rule5_rows.append(row)
 
     rules = {

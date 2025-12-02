@@ -3,6 +3,7 @@ import shutil
 import pandas as pd
 
 from utils.utils import save_report_copy
+from utils.constants import ReportConfig, REPORTS_FOLDER_NAME
 
 
 TABLE_STYLE_BUGS = """
@@ -24,7 +25,7 @@ TABLE_STYLE_BUGS = """
 """
 
 
-def export_automation_results_html(results, filename="automation_results.html"):
+def export_automation_results_html(results, filename=ReportConfig.AUTOMATION_RESULTS_FILENAME):
     """
     Generates HTML report for automation results only.
     """
@@ -35,12 +36,12 @@ def export_automation_results_html(results, filename="automation_results.html"):
         html_parts.append(df.to_html(index=False, escape=False))
     else:
         html_parts.append(
-            '<p style="text-align:center;font-size:24px;font-weight:bold;">All clear! No bugs found ✅</p>')
+            f'<p style="text-align:center;font-size:24px;font-weight:bold;">{ReportConfig.NO_BUGS_MESSAGE}</p>')
 
     html_parts.append("</body></html>")
 
-    os.makedirs("reports", exist_ok=True)
-    path = os.path.join("reports", filename)
+    os.makedirs(REPORTS_FOLDER_NAME, exist_ok=True)
+    path = os.path.join(REPORTS_FOLDER_NAME, filename)
 
     with open(path, "w", encoding="utf-8") as f:
         f.write("\n".join(html_parts))

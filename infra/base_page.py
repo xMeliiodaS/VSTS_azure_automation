@@ -3,13 +3,15 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.support import expected_conditions as EC
 
+from utils.constants import Timeouts, Retries
+
 
 class BasePage:
     """
     Base class for all page objects. Contains common methods and attributes.
     """
 
-    def __init__(self, driver, default_timeout: int = 20):
+    def __init__(self, driver, default_timeout: int = Timeouts.DEFAULT_TIMEOUT):
         """
         Initialize the BasePage with a WebDriver instance.
 
@@ -58,7 +60,7 @@ class BasePage:
             });
         """, element)
 
-    def navigate_with_retry(self, url: str, retries: int = 3):
+    def navigate_with_retry(self, url: str, retries: int = Retries.NAVIGATION_RETRIES):
         """Navigate to a URL and retry if the page fails to load completely."""
         for attempt in range(1, retries + 1):
             try:

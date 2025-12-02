@@ -7,6 +7,7 @@ from selenium.webdriver.support import expected_conditions as EC
 
 from logic.base_page_app import BasePageApp
 from utils.utils import safe_click, smart_click
+from utils.constants import Timeouts, Retries
 
 
 class WorkItemsSearch(BasePageApp):
@@ -29,16 +30,16 @@ class WorkItemsSearch(BasePageApp):
         Reliable even on slow machines by verifying each step.
         """
         # ensure visible/clickable
-        input_el = self.wait_clickable(By.CSS_SELECTOR, self.SEARCH_BAR_INPUT, timeout=10)
+        input_el = self.wait_clickable(By.CSS_SELECTOR, self.SEARCH_BAR_INPUT, timeout=Timeouts.SHORT_TIMEOUT)
 
-        safe_click(self._driver, self.SEARCH_BAR_INPUT, retries=3, wait_time=10)
+        safe_click(self._driver, self.SEARCH_BAR_INPUT, retries=Retries.CLICK_RETRIES, wait_time=Timeouts.SHORT_TIMEOUT)
 
         # clear field robustly
         input_el.send_keys(Keys.CONTROL, "a")
         input_el.send_keys(Keys.DELETE)
 
         # wait until the field is empty
-        WebDriverWait(self._driver, 10).until(
+        WebDriverWait(self._driver, Timeouts.SHORT_TIMEOUT).until(
             lambda d: input_el.get_attribute("value") == ""
         )
 
@@ -46,12 +47,12 @@ class WorkItemsSearch(BasePageApp):
         input_el.send_keys(str(bug_id))
 
         # wait until the field contains exactly the bug id
-        WebDriverWait(self._driver, 10).until(
+        WebDriverWait(self._driver, Timeouts.SHORT_TIMEOUT).until(
             lambda d: input_el.get_attribute("value") == str(bug_id)
         )
 
         # now hit Enter
-        time.sleep(0.1)
+        time.sleep(Timeouts.INPUT_DELAY_SLEEP)
 
         # force focus, no sleep
         self._driver.execute_script("arguments[0].focus();", input_el)
@@ -61,7 +62,7 @@ class WorkItemsSearch(BasePageApp):
         smart_click(
             self._driver,
             self.SEARCH_ICON_BUTTON,
-            retries=3,
-            wait_time=10,
+            retries=Retries.CLICK_RETRIES,
+            wait_time=Timeouts.SHORT_TIMEOUT,
             post_condition_locator=self.CLOSE_CURRENT_BUG_BUTTON
         )
