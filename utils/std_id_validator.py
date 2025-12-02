@@ -52,9 +52,9 @@ def build_result_record(
         "Bug ID": bug_id,
         "STD ID in DOORS": ", ".join([str(tid) for tid in test_ids]),
         "STD ID in VSTS": field_val,
+        "STD Name Status": std_name_status or "❌",
         "Test Case ID Status": status_str,
         "Last Reproduced In Status": last_reproduced_in_status or "❌",
         "Iteration Path Status": iteration_path_status or "❌",
-        "STD Name Status": std_name_status or "❌",
         "Comments": comment
     }
