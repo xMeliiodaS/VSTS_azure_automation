@@ -8,6 +8,7 @@ from infra.working_with_exel import get_bug_to_tests_map, validate_and_summarize
 from logic.work_item import WorkItem
 from logic.base_page_app import BasePageApp
 from logic.work_items_search import WorkItemsSearch
+from logic.parallel_item_processor import ItemTask
 
 from utils.report_automation_results import export_automation_results_html
 from utils.std_id_validator import validate_std_id, build_result_record
@@ -47,7 +48,17 @@ class TestBugSTDValidation(unittest.TestCase):
     def test_unique_bugs_std_id(self):
         """
          Validate each bug's STD_ID against expected Test Case IDs and generate HTML report.
-         """
+         Uses parallel processing if configured, otherwise sequential.
+        """
+        # Check if parallel processing is enabled
+        use_parallel = self.config.get("use_parallel_processing", False)
+        
+        if use_parallel:
+            # Use parallel version
+            self.test_unique_bugs_std_id_parallel()
+            return
+        
+        # Original sequential version
         results = []
         work_items_search = WorkItemsSearch(self.driver)
         work_item = WorkItem(self.driver)
@@ -80,6 +91,54 @@ class TestBugSTDValidation(unittest.TestCase):
 
                 # --- Signal C# that iteration is done ---
                 print(ProgressMessages.PROCESS_FINISHED, flush=True)
+
+    def test_unique_bugs_std_id_parallel(self):
+        """
+        Parallel version: Validate each bug's STD_ID using multiprocessing with direct URL navigation.
+        Much faster than sequential processing.
+        """
+        from logic.parallel_item_processor import (
+            process_items_parallel,
+            build_item_url
+        )
+        
+        # Check if there are no bugs to process
+        if not self.bug_map_dict:
+            print(ProgressMessages.NO_BUGS_FOUND)
+            export_automation_results_html([])
+            return
+        
+        total_bugs = len(self.bug_map_dict)
+        print(f"{ProgressMessages.PROGRESS_TOTAL_PREFIX} {total_bugs}", flush=True)
+        
+        # Build item URLs from bug IDs using base URL
+        base_url = self.config["url"]
+        item_tasks = []
+        for bug_id, test_ids in self.bug_map_dict.items():
+            bug_id_str = str(bug_id).strip()
+            item_url = build_item_url(base_url, bug_id_str)
+            item_tasks.append(ItemTask(
+                url=item_url,
+                bug_id=bug_id_str,
+                test_ids=test_ids,
+                use_direct_navigation=True
+            ))
+        
+        # Get number of workers from config, or use default (CPU count)
+        num_workers = self.config.get("parallel_workers", None)
+        
+        # Process in parallel
+        results = process_items_parallel(
+            item_tasks=item_tasks,
+            config=self.config,
+            num_workers=num_workers
+        )
+        
+        # Export results
+        if results:
+            export_automation_results_html(results)
+        
+        print(ProgressMessages.PROCESS_FINISHED, flush=True)
 
     def process_single_bug(self, bug_id, test_ids, work_item, work_items_search, results):
         """
