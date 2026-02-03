@@ -117,6 +117,10 @@ COLUMN_MAP = {
 # ============================================================================
 # Excel Validation Rules
 # ============================================================================
+# Valid Test Results (only these 4 are allowed)
+VALID_TEST_RESULTS = ("pass", "fail", "not tested", "n/a")
+
+
 class ExcelRules:
     """Excel validation rule names and descriptions."""
     RULE_NAMES = {
@@ -124,7 +128,10 @@ class ExcelRules:
         "Rule2": "Test Results is not empty AND Expected Result is Empty",
         "Rule3": "Bug not empty AND Test Results = Pass",
         "Rule4": "Bug Empty AND Results = Fail",
-        "Rule5": "Actual Results validation (Pass=Y, Fail=N)"
+        "Rule5": "Actual Results validation (Pass=Y, Fail=N, Not Tested=N/A, N/A=N/A)",
+        "Rule6": "Precondition (Expected=N/A): Test Results, Actual Results, Bug must be empty",
+        "Rule7": "Test Result is N/A but Comment is empty",
+        "Rule8": "Test Results value is not one of: Pass, Fail, Not Tested, N/A",
     }
     
     RULE_COLUMN_NAME = "Rule"

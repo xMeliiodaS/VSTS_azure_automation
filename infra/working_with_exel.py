@@ -59,7 +59,7 @@ def get_bug_to_tests_map(excel_path):
 from openpyxl import load_workbook
 from collections import defaultdict
 
-from utils.constants import COLUMN_MAP, STDConstants, ExcelRules
+from utils.constants import COLUMN_MAP, STDConstants, ExcelRules, VALID_TEST_RESULTS
 
 
 def normalize_columns(cols):
@@ -68,18 +68,26 @@ def normalize_columns(cols):
 
 
 
-def get_column(headers, key):
-    """Return first header that matches any variant of key."""
-    variants = COLUMN_MAP[key]
+def get_column(headers, key, required=True):
+    """Return first header that matches any variant of key. If required=False, returns None when missing."""
+    variants = COLUMN_MAP.get(key, [])
+    if not variants:
+        return None if not required else _raise_missing(key)
     for variant in variants:
         for h in headers:
             if variant in h:
                 return h
+    if required:
+        raise ValueError(f"Missing required column for key '{key}'")
+    return None
+
+
+def _raise_missing(key):
     raise ValueError(f"Missing required column for key '{key}'")
 
 
 def is_precondition_row(row, headers):
-    """Check if row is a precondition row."""
+    """Check if row is a precondition row (only id/headline/desc filled, rest empty)."""
     possible_must_have = ExcelRules.POSSIBLE_MUST_HAVE_COLUMNS
     must_have = [h for h in headers if h in possible_must_have]
     other_cols = [h for h in headers if h not in must_have]
@@ -97,6 +105,13 @@ def is_precondition_row(row, headers):
     return True
 
 
+def is_precondition_expected_na(row, expected_col):
+    """True when Expected Result is N/A (precondition test - Results/Actual/Bug must be empty)."""
+    exp = row.get(expected_col)
+    exp_str = str(exp or "").strip().lower()
+    return exp_str == STDConstants.N_A
+
+
 def validate_and_summarize(file_path):
     """Validate STD rules using openpyxl."""
     wb = load_workbook(filename=file_path, data_only=True)
@@ -106,9 +121,9 @@ def validate_and_summarize(file_path):
     expected_col = get_column(headers, "expected")
     results_col = get_column(headers, "results")
     bug_col = get_column(headers, "bug")
-    comment_col = get_column(headers, "comment")
+    comment_col = get_column(headers, "comment", required=False)
     id_col = get_column(headers, "id")
-    actual_col = get_column(headers, "actual") if any("actual" in h for h in headers) else None
+    actual_col = get_column(headers, "actual", required=False)
 
     data = []
     for row in ws.iter_rows(min_row=2, values_only=True):
@@ -125,15 +140,22 @@ def validate_and_summarize(file_path):
     rule3_rows = []
     rule4_rows = []
     rule5_rows = []
+    rule6_rows = []
+    rule7_rows = []
+    rule8_rows = []
 
     for row in data:
         res = str(row.get(results_col) or '').strip()
         res_lower = res.lower()
         exp = row.get(expected_col)
+        exp_lower = str(exp or "").strip().lower()
         bug = row.get(bug_col)
+        bug_empty = bug is None or str(bug).strip() == ""
 
-        # Rule1: expected filled AND results empty, ignore 'N/A'/'NOT TESTED'
-        if exp and (res == '' or res_lower in [STDConstants.NONE, STDConstants.NAN]) and res_lower not in [STDConstants.N_A, STDConstants.NOT_TESTED]:
+        # Rule1: expected filled AND results empty; exclude precondition (Expected=N/A)
+        if (exp and exp_lower != STDConstants.N_A and
+                (res == '' or res_lower in [STDConstants.NONE, STDConstants.NAN]) and
+                res_lower not in [STDConstants.N_A, STDConstants.NOT_TESTED]):
             rule1_rows.append(row)
 
         # Rule2: results filled AND expected empty, excluding precondition
@@ -145,30 +167,55 @@ def validate_and_summarize(file_path):
             rule3_rows.append(row)
 
         # Rule4: bug empty AND results = fail
-        if not bug and res_lower == STDConstants.FAIL:
+        if bug_empty and res_lower == STDConstants.FAIL:
             rule4_rows.append(row)
 
-        # Rule5: Validate Actual Results vs Test Result consistency
+        # Rule5: Actual Results vs Test Result (only when Actual column exists)
         if actual_col:
             actual_val = str(row.get(actual_col) or '').strip()
+            actual_lower = actual_val.lower()
             test_result_val = res_lower
 
             if test_result_val == STDConstants.PASS:
-                # Pass → Actual must be 'Y'
-                if actual_val != STDConstants.ACTUAL_PASS_VALUE:
+                if actual_lower != STDConstants.ACTUAL_PASS_VALUE.lower():
+                    rule5_rows.append(row)
+            elif test_result_val == STDConstants.FAIL:
+                if not actual_val.upper().startswith(STDConstants.ACTUAL_FAIL_PREFIX.upper()):
+                    rule5_rows.append(row)
+                else:
+                    after_comma = (actual_val.split(",", 1)[1].strip() if "," in actual_val else "").strip()
+                    if not after_comma:
+                        rule5_rows.append(row)
+            elif test_result_val == STDConstants.NOT_TESTED or test_result_val == STDConstants.N_A:
+                if actual_lower != STDConstants.N_A:
                     rule5_rows.append(row)
 
-            elif test_result_val == STDConstants.FAIL:
-                # Fail → Actual must start with 'N,' and have a comment after the comma
-                if not actual_val.startswith(STDConstants.ACTUAL_FAIL_PREFIX) or len(actual_val.split(",", 1)[1].strip()) == 0:
-                    rule5_rows.append(row)
+        # Rule6: Precondition (Expected=N/A) must have empty Results, Actual, Bug
+        if is_precondition_expected_na(row, expected_col):
+            has_results = res != ""
+            has_actual = actual_col and str(row.get(actual_col) or "").strip() != ""
+            if has_results or has_actual or not bug_empty:
+                rule6_rows.append(row)
+
+        # Rule7: Test Result = N/A must have a comment (when Comment column exists)
+        if comment_col and res_lower == STDConstants.N_A:
+            comment_val = str(row.get(comment_col) or "").strip()
+            if not comment_val:
+                rule7_rows.append(row)
+
+        # Rule8: Test Results must be one of Pass, Fail, Not Tested, N/A (when not empty)
+        if res != "" and res_lower not in VALID_TEST_RESULTS:
+            rule8_rows.append(row)
 
     rules = {
         "Rule1": rule1_rows,
         "Rule2": rule2_rows,
         "Rule3": rule3_rows,
         "Rule4": rule4_rows,
-        "Rule5": rule5_rows if actual_col else []  # only if actual exists
+        "Rule5": rule5_rows if actual_col else [],
+        "Rule6": rule6_rows,
+        "Rule7": rule7_rows if comment_col else [],
+        "Rule8": rule8_rows,
     }
 
     # Print summary

@@ -13,13 +13,17 @@ class TestExcelViolations(unittest.TestCase):
         self.std_excel_path = self.config["excel_path"]
 
     def test_excel_violations(self):
-        """Validate that Excel is consistent and generate violations HTML report."""
+        """Validate that STD Excel is 100% valid with zero violations; generate HTML report."""
         violations = validate_and_summarize(self.std_excel_path)
 
         # Export HTML report for violations
         export_excel_violations_html(violations)
 
         self.assertIsNotNone(violations, "Excel validation failed: no violations summary returned.")
+
+        # STD must be valid with not a single violation
+        total = sum(len(rows) for rows in violations.values())
+        self.assertEqual(total, 0, "STD has violations (must be 100%% valid). See HTML report for details.")
 
 
 if __name__ == "__main__":
