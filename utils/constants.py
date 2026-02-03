@@ -6,7 +6,7 @@ Centralizes all hardcoded values to improve maintainability and clean code pract
 # ============================================================================
 # Application Configuration
 # ============================================================================
-APP_DATA_FOLDER_NAME = "AT_baseline_verifier"
+APP_DATA_FOLDER_NAME = "ste_tool_studio"
 CONFIG_FILE_NAME = "config.json"
 REPORTS_FOLDER_NAME = "reports"
 
