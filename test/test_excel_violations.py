@@ -27,6 +27,14 @@ class TestExcelViolations(unittest.TestCase):
 
 
 if __name__ == "__main__":
+    import os
+    import sys
+    import logging
+    from infra import logger_setup
+
+    # Grab the logger configured by infra.logger_setup
+    log = logging.getLogger(__name__)
+
     appdata_folder = os.path.join(
         os.environ.get('APPDATA', os.path.expanduser('~\\AppData\\Roaming')),
         APP_DATA_FOLDER_NAME
@@ -37,4 +45,12 @@ if __name__ == "__main__":
 
     suite = unittest.TestSuite()
     suite.addTest(TestExcelViolations('test_excel_violations'))
-    unittest.TextTestRunner(verbosity=2).run(suite)
+    result = unittest.TextTestRunner(verbosity=2).run(suite)
+
+    if result.wasSuccessful():
+        log.info("Output: Document normalization completed successfully.")
+        sys.exit(0)
+    else:
+        failures = "; ".join(str(f[1]) for f in result.failures) if result.failures else "unknown"
+        log.info("Output: checking violations failed. %s", failures)
+        sys.exit(1)

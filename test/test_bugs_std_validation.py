@@ -259,5 +259,5 @@ if __name__ == "__main__":
         sys.exit(0)
     else:
         failures = "; ".join(str(f[1]) for f in result.failures) if result.failures else "unknown"
-        log.info("Output: Document normalization failed. %s", failures)
+        log.info("Output: validating failed. %s", failures)
         sys.exit(1)
